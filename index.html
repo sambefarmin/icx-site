@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICX – The Reference Rate for AI Compute</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#07080a;--bg2:#0d0f14;--bg3:#12151c;--bg4:#181c26;
+--border:#1e2330;--border2:#2a3040;
+--text:#e8eaf0;--text2:#9ba3b8;--text3:#5c6580;
+--accent:#4f8cff;--accent2:#3366dd;--accent3:#1a3a7a;
+--green:#2dd4a0;--green2:#1a7a5a;--green3:#0d3d2d;
+--red:#ff5c72;--red2:#aa2244;
+--orange:#ffaa44;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");z-index:9999}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ========== PASSWORD GATE ========== */
+#gate{position:fixed;inset:0;z-index:10000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
+#gate.hidden{opacity:0;visibility:hidden;pointer-events:none}
+#gate::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(79,140,255,.06) 0%,transparent 70%);pointer-events:none}
+.gate-logo{font-size:36px;font-weight:900;letter-spacing:4px;color:var(--accent);margin-bottom:8px}
+.gate-logo span{color:var(--text3)}
+.gate-sub{font-size:13px;color:var(--text3);letter-spacing:1px;margin-bottom:48px}
+.gate-box{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:16px}
+.gate-input-wrap{position:relative}
+.gate-input{width:320px;padding:14px 20px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.gate-input:focus{border-color:var(--accent)}
+.gate-input::placeholder{color:var(--text3)}
+.gate-input.error{border-color:var(--red);animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.gate-btn{width:320px;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .2s}
+.gate-btn:hover{background:var(--accent2);transform:translateY(-1px)}
+.gate-error-msg{font-size:12px;color:var(--red);height:16px;transition:opacity .2s}
+.gate-hint{font-size:11px;color:var(--text3);margin-top:24px;letter-spacing:.5px}
+
+/* ========== MAIN SITE ========== */
+#site{display:none}
+#site.visible{display:block}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,8,10,.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(30,35,48,.5)}
+.logo{font-size:22px;font-weight:800;letter-spacing:2px;color:var(--accent)}
+.logo span{color:var(--text3)}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:13px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{padding:8px 20px;background:var(--accent);color:#fff;border-radius:6px;font-weight:600;font-size:12px;letter-spacing:.5px;text-transform:uppercase;text-decoration:none;transition:all .2s}
+.nav-cta:hover{background:var(--accent2);transform:translateY(-1px)}
+
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:120px 40px 80px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(79,140,255,.08) 0%,transparent 70%);pointer-events:none}
+.hero-tag{font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:24px;display:flex;align-items:center;gap:8px}
+.hero-tag::before,.hero-tag::after{content:'';width:24px;height:1px;background:var(--accent);opacity:.5}
+.hero h1{font-size:clamp(48px,7vw,88px);font-weight:900;line-height:1;letter-spacing:-3px;margin-bottom:24px;background:linear-gradient(180deg,#fff 30%,var(--text2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:18px;color:var(--text2);max-width:600px;line-height:1.7;margin-bottom:48px}
+
+.rate-hero{display:flex;gap:2px;margin-bottom:48px;border-radius:12px;overflow:hidden}
+.rate-hero-main{background:var(--bg3);padding:40px 48px;display:flex;flex-direction:column;gap:6px;min-width:320px}
+.rate-hero-main .label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3)}
+.rate-hero-main .value{font-family:'JetBrains Mono',monospace;font-size:56px;font-weight:600;color:#fff}
+.rate-hero-main .value span{color:var(--green)}
+.rate-hero-main .sub{font-size:13px;color:var(--text2)}
+.rate-hero-side{display:flex;flex-direction:column;gap:2px}
+.rate-hero-side .stat{background:var(--bg3);padding:20px 32px;flex:1;display:flex;flex-direction:column;justify-content:center}
+.rate-hero-side .stat .label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.rate-hero-side .stat .val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600}
+.up{color:var(--green)}.down{color:var(--red)}.neutral{color:var(--text2)}
+
+.scroll-cue{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase;animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+.scroll-arrow{width:20px;height:20px;border-right:2px solid var(--text3);border-bottom:2px solid var(--text3);transform:rotate(45deg)}
+
+section{padding:100px 40px}
+.container{max-width:1200px;margin:0 auto}
+.section-tag{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+.section-title{font-size:clamp(32px,4vw,48px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
+.section-sub{font-size:16px;color:var(--text2);max-width:560px;line-height:1.7;margin-bottom:48px}
+
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.table-header{padding:20px 28px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.table-header h3{font-size:15px;font-weight:700}
+.table-header .badge{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:var(--green3);color:var(--green)}
+.pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);padding:14px 28px;border-bottom:1px solid var(--border)}
+td{padding:16px 28px;font-size:14px;border-bottom:1px solid rgba(30,35,48,.4)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(79,140,255,.03)}
+.provider-name{font-weight:600}
+.price-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:15px}
+.tier-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase}
+.tier-hyper{background:rgba(255,92,114,.1);color:var(--red)}
+.tier-spec{background:rgba(79,140,255,.1);color:var(--accent)}
+.tier-mkt{background:rgba(255,170,68,.1);color:var(--orange)}
+.delta{font-family:'JetBrains Mono',monospace;font-size:12px}
+
+.chart-area{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:32px;margin-top:48px;position:relative;height:340px;overflow:hidden}
+.chart-area .label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:20px}
+.chart-canvas{width:100%;height:250px;position:relative}
+.y-labels{position:absolute;left:0;top:0;bottom:0;display:flex;flex-direction:column;justify-content:space-between;padding:4px 0}
+.y-labels span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3)}
+.x-labels{position:absolute;bottom:-20px;left:40px;right:0;display:flex;justify-content:space-between}
+.x-labels span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3)}
+
+.method-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2px}
+.method-card{background:var(--bg3);padding:36px;transition:all .3s}
+.method-card:first-child{border-radius:12px 0 0 0}
+.method-card:nth-child(3){border-radius:0 12px 0 0}
+.method-card:nth-child(4){border-radius:0 0 0 12px}
+.method-card:last-child{border-radius:0 0 12px 0}
+.method-card:hover{background:var(--bg4)}
+.method-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);font-weight:600;margin-bottom:12px}
+.method-card h4{font-size:16px;font-weight:700;margin-bottom:8px}
+.method-card p{font-size:13px;color:var(--text2);line-height:1.6}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:48px;border-radius:12px;overflow:hidden}
+.stat-card{background:var(--bg3);padding:32px;text-align:center}
+.stat-card .num{font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:700;margin-bottom:4px}
+.stat-card .lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+
+.roadmap{display:flex;gap:2px;border-radius:12px;overflow:hidden;margin-top:48px}
+.roadmap-phase{flex:1;padding:36px;background:var(--bg3);position:relative;transition:all .3s}
+.roadmap-phase:hover{background:var(--bg4)}
+.roadmap-phase.active{background:var(--accent3);border:1px solid rgba(79,140,255,.3)}
+.phase-tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.phase-tag.now{color:var(--accent)}
+.phase-tag.next{color:var(--text3)}
+.roadmap-phase h4{font-size:18px;font-weight:700;margin-bottom:8px}
+.roadmap-phase p{font-size:13px;color:var(--text2);line-height:1.6}
+
+.cta-section{text-align:center;padding:120px 40px;position:relative}
+.cta-section::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(circle,rgba(79,140,255,.06) 0%,transparent 70%);pointer-events:none}
+.cta-section h2{font-size:clamp(36px,5vw,56px);font-weight:900;letter-spacing:-2px;margin-bottom:16px}
+.cta-section p{font-size:16px;color:var(--text2);max-width:480px;margin:0 auto 40px;line-height:1.7}
+.cta-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn-primary{padding:14px 36px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .2s;text-decoration:none}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 8px 30px rgba(79,140,255,.2)}
+.btn-secondary{padding:14px 36px;background:transparent;color:var(--text);border:1px solid var(--border2);border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none}
+.btn-secondary:hover{border-color:var(--text3);transform:translateY(-2px)}
+
+footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:var(--text3);font-size:12px;letter-spacing:.5px}
+
+.ticker-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 0;overflow:hidden;white-space:nowrap}
+.ticker-content{display:flex;gap:48px;animation:tickscroll 30s linear infinite;width:max-content}
+.ticker-item{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px}
+.ticker-item .name{color:var(--text3);font-weight:600}
+@keyframes tickscroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);display:inline-block;animation:pulse 2s infinite}
+
+@media(max-width:768px){
+  nav{padding:12px 20px}
+  .nav-links{display:none}
+  .hero{padding:100px 20px 60px}
+  .rate-hero{flex-direction:column}
+  .rate-hero-side{flex-direction:row}
+  section{padding:60px 20px}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .roadmap{flex-direction:column}
+  .method-grid{grid-template-columns:1fr}
+  table{font-size:12px}
+  th,td{padding:12px 16px}
+  .gate-input,.gate-btn{width:280px}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== PASSWORD GATE ========== -->
+<div id="gate">
+  <div class="gate-logo">ICX<span>.global</span></div>
+  <div class="gate-sub">The Reference Rate for AI Compute</div>
+  <div class="gate-box">
+    <div class="gate-input-wrap">
+      <input type="password" id="gate-pw" class="gate-input" placeholder="Enter access code" autofocus>
+    </div>
+    <button class="gate-btn" id="gate-submit">Enter</button>
+    <div class="gate-error-msg" id="gate-err">&nbsp;</div>
+    <div class="gate-hint">Early access · Invitation only</div>
+  </div>
+</div>
+
+<!-- ========== MAIN SITE (hidden until auth) ========== -->
+<div id="site">
+
+<nav>
+  <div class="logo">ICX<span>.global</span></div>
+  <div class="nav-links">
+    <a href="#rate">Live Rate</a>
+    <a href="#providers">Providers</a>
+    <a href="#methodology">Methodology</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#subscribe" class="nav-cta">Get API Access</a>
+  </div>
+</nav>
+
+<div class="ticker-bar">
+  <div class="ticker-content" id="ticker"></div>
+</div>
+
+<section class="hero">
+  <div class="hero-tag">The Reference Rate for AI Compute</div>
+  <h1>ICX H100<br>US Spot</h1>
+  <p>A transparent, repeatable, daily reference rate for deliverable AI compute. One instrument. One anchor. Built so the market can mature.</p>
+  <div class="rate-hero" id="rate">
+    <div class="rate-hero-main">
+      <div class="label">ICX H100 US Spot Reference Rate</div>
+      <div class="value">$<span id="ref-rate">2.68</span></div>
+      <div class="sub">per GPU-hour · Settlement <span id="settle-date"></span> · <span class="live-dot"></span> Live</div>
+    </div>
+    <div class="rate-hero-side">
+      <div class="stat">
+        <div class="label">24h Change</div>
+        <div class="val down" id="daily-chg">-$0.04 (−1.5%)</div>
+      </div>
+      <div class="stat">
+        <div class="label">7d Range</div>
+        <div class="val neutral" id="week-range">$2.52 – $2.89</div>
+      </div>
+      <div class="stat">
+        <div class="label">Providers Sampled</div>
+        <div class="val" id="prov-count">14</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue"><span>Explore</span><div class="scroll-arrow"></div></div>
+</section>
+
+<section id="providers">
+  <div class="container">
+    <div class="section-tag">Market Data</div>
+    <div class="section-title">H100 Spot Prices Across Providers</div>
+    <div class="section-sub">Normalized to $/GPU-hour for a single NVIDIA H100 80GB in the US. On-demand rates only. Updated daily.</div>
+    <div class="table-wrap">
+      <div class="table-header">
+        <h3>Provider Price Feed</h3>
+        <div class="badge"><span class="pulse"></span>Live Data</div>
+      </div>
+      <table id="provider-table">
+        <thead><tr><th>Provider</th><th>Tier</th><th>$/GPU-hr</th><th>Δ vs ICX</th><th>Config</th><th>Status</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="chart-area">
+      <div class="label">ICX H100 US Spot — 30 Day History</div>
+      <div class="chart-canvas">
+        <div class="y-labels"><span>$3.40</span><span>$3.00</span><span>$2.60</span><span>$2.20</span><span>$1.80</span></div>
+        <svg class="chart-svg" viewBox="0 0 1100 230" preserveAspectRatio="none" id="chart-svg" style="margin-left:40px;width:calc(100% - 40px)">
+          <defs><linearGradient id="grd" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(79,140,255,.25)"/><stop offset="100%" stop-color="rgba(79,140,255,0)"/></linearGradient></defs>
+        </svg>
+        <div class="x-labels" id="x-labels"></div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="num up" id="stat-icx">$2.68</div><div class="lbl">ICX Spot Rate</div></div>
+      <div class="stat-card"><div class="num">$4.82</div><div class="lbl">Hyperscaler Avg</div></div>
+      <div class="stat-card"><div class="num">$2.14</div><div class="lbl">Specialist Low</div></div>
+      <div class="stat-card"><div class="num">2.6×</div><div class="lbl">Price Dispersion</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="methodology" style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-tag">Methodology</div>
+    <div class="section-title">How ICX Calculates the Rate</div>
+    <div class="section-sub">Transparent. Repeatable. Independent of hardware cost models.</div>
+    <div class="method-grid">
+      <div class="method-card"><div class="method-num">01</div><h4>Collect</h4><p>Gather executable on-demand H100 hourly pricing from a diversified panel of US-based cloud providers. Multi-GPU clusters normalized to per-GPU equivalent.</p></div>
+      <div class="method-card"><div class="method-num">02</div><h4>Normalize</h4><p>Standard Compute Unit: 1× NVIDIA H100 80GB, US-located, hourly provisionable. Variants flagged and adjusted. All prices in $/GPU-hour.</p></div>
+      <div class="method-card"><div class="method-num">03</div><h4>Clean</h4><p>Trim statistical outliers. Exclude stale quotes and non-executable listings. Apply minimum data thresholds before publication.</p></div>
+      <div class="method-card"><div class="method-num">04</div><h4>Publish</h4><p>Averaged rate published daily at 4:00 PM ET. Consistent timing. Full methodology documentation available. History downloadable.</p></div>
+      <div class="method-card"><div class="method-num">05</div><h4>Price ≠ Cost</h4><p>ICX reflects transaction prices, not hardware ASP or production expense. Commodity benchmarks measure markets, not drilling costs.</p></div>
+      <div class="method-card"><div class="method-num">06</div><h4>Governance</h4><p>Published methodology. Documented update process. Minimum data requirements. The remedy for data risk is governance, not complexity.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="roadmap">
+  <div class="container">
+    <div class="section-tag">Strategic Sequence</div>
+    <div class="section-title">Benchmark First. Then Everything Else.</div>
+    <div class="section-sub">Derivatives cannot precede credibility. ICX follows the established path: measure → adopt → structure → financialize.</div>
+    <div class="roadmap">
+      <div class="roadmap-phase active"><div class="phase-tag now">Phase 1 — Now</div><h4>Measurement</h4><p>Publish a consistent daily reference rate. Establish volatility patterns, seasonal shifts, and supply tightness in a neutral instrument.</p></div>
+      <div class="roadmap-phase"><div class="phase-tag next">Phase 2</div><h4>Adoption</h4><p>Startups benchmark vendor quotes to ICX. Procurement teams embed ICX in forecasts. The signal: "ICX plus spread" enters the market vocabulary.</p></div>
+      <div class="roadmap-phase"><div class="phase-tag next">Phase 3</div><h4>Structure</h4><p>Term expectations, forward curves, and realized volatility measures derived from observed spot data. Analytic layers, not separate businesses.</p></div>
+      <div class="roadmap-phase"><div class="phase-tag next">Phase 4</div><h4>Financialization</h4><p>Bilateral swaps. Cash-settled futures. Only after the benchmark is sufficiently trusted and liquid. Trust is the prerequisite, not the product.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="subscribe">
+  <h2>ICX measures the market<br>so the market can mature.</h2>
+  <p>Get the daily rate delivered to your inbox. Access the API. Reference ICX in your next vendor negotiation.</p>
+  <div class="cta-buttons">
+    <a href="#" class="btn-primary">Subscribe to Daily Rate</a>
+    <a href="#" class="btn-secondary">API Documentation</a>
+  </div>
+</section>
+
+<footer>&copy; 2026 ICX Global. The Reference Rate for AI Compute. All rights reserved.</footer>
+
+</div><!-- /site -->
+
+<script>
+// ========== PASSWORD GATE ==========
+const PASS = "Not my monkeys";
+const gateEl = document.getElementById('gate');
+const siteEl = document.getElementById('site');
+const pwInput = document.getElementById('gate-pw');
+const errEl = document.getElementById('gate-err');
+
+function tryLogin(){
+  if(pwInput.value === PASS){
+    gateEl.classList.add('hidden');
+    siteEl.classList.add('visible');
+    initSite();
+  } else {
+    pwInput.classList.add('error');
+    errEl.textContent = 'Invalid access code';
+    setTimeout(()=>{pwInput.classList.remove('error');errEl.innerHTML='&nbsp;'},1500);
+  }
+}
+document.getElementById('gate-submit').addEventListener('click', tryLogin);
+pwInput.addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
+
+// ========== SITE INIT (only after auth) ==========
+function initSite(){
+const providers = [
+  {name:"AWS (p5)",tier:"Hyperscaler",tierCls:"tier-hyper",price:8.22,config:"SXM5 80GB",avail:true},
+  {name:"Google Cloud (a3)",tier:"Hyperscaler",tierCls:"tier-hyper",price:3.76,config:"SXM5 80GB",avail:true},
+  {name:"Azure (NC H100)",tier:"Hyperscaler",tierCls:"tier-hyper",price:6.98,config:"SXM5 80GB",avail:true},
+  {name:"Lambda Labs",tier:"Specialist",tierCls:"tier-spec",price:2.49,config:"SXM5 80GB",avail:true},
+  {name:"RunPod (Secure)",tier:"Specialist",tierCls:"tier-spec",price:2.39,config:"SXM5 80GB",avail:true},
+  {name:"Hyperstack",tier:"Specialist",tierCls:"tier-spec",price:2.40,config:"SXM5 80GB",avail:true},
+  {name:"GMI Cloud",tier:"Specialist",tierCls:"tier-spec",price:2.10,config:"SXM5 80GB",avail:true},
+  {name:"CoreWeave",tier:"Specialist",tierCls:"tier-spec",price:2.23,config:"SXM5 80GB",avail:true},
+  {name:"TensorDock",tier:"Specialist",tierCls:"tier-spec",price:2.25,config:"SXM5 80GB",avail:true},
+  {name:"Vast.ai",tier:"Marketplace",tierCls:"tier-mkt",price:1.87,config:"SXM5 80GB",avail:true},
+  {name:"Nebius",tier:"Specialist",tierCls:"tier-spec",price:1.92,config:"SXM5 80GB",avail:true},
+  {name:"Thunder Compute",tier:"Specialist",tierCls:"tier-spec",price:1.50,config:"SXM5 80GB",avail:true},
+  {name:"Jarvislabs",tier:"Specialist",tierCls:"tier-spec",price:2.99,config:"SXM5 80GB",avail:true},
+  {name:"RunPod (Community)",tier:"Marketplace",tierCls:"tier-mkt",price:1.99,config:"PCIe 80GB",avail:true},
+];
+
+function calcICX(p){
+  const s=p.map(x=>x.price).sort((a,b)=>a-b);
+  const t=Math.floor(s.length*.15);
+  const tr=s.slice(t,s.length-t);
+  return tr.reduce((a,b)=>a+b,0)/tr.length;
+}
+
+const icxRate=calcICX(providers);
+document.getElementById('ref-rate').textContent=icxRate.toFixed(2);
+document.getElementById('stat-icx').textContent='$'+icxRate.toFixed(2);
+
+const now=new Date();
+document.getElementById('settle-date').textContent=now.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+
+const tbody=document.querySelector('#provider-table tbody');
+function renderTable(){
+  tbody.innerHTML='';
+  const r=calcICX(providers);
+  [...providers].sort((a,b)=>a.price-b.price).forEach(p=>{
+    const d=p.price-r,sign=d>=0?'+':'',cls=d>0?'up':'down',pct=((d/r)*100).toFixed(1);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="provider-name">${p.name}</td><td><span class="tier-badge ${p.tierCls}">${p.tier}</span></td><td class="price-val">$${p.price.toFixed(2)}</td><td class="delta ${cls}">${sign}$${Math.abs(d).toFixed(2)} (${sign}${pct}%)</td><td style="color:var(--text2)">${p.config}</td><td><span style="color:var(--green)">● Available</span></td>`;
+    tbody.appendChild(tr);
+  });
+}
+renderTable();
+
+// Ticker
+const tickerEl=document.getElementById('ticker');
+let tHTML='';
+for(let i=0;i<2;i++){providers.forEach(p=>{const d=p.price-icxRate,s=d>=0?'+':'',c=d>=0?'up':'down';tHTML+=`<div class="ticker-item"><span class="name">${p.name}</span> $${p.price.toFixed(2)} <span class="${c}">${s}${((d/icxRate)*100).toFixed(1)}%</span></div>`;});}
+tickerEl.innerHTML=tHTML;
+
+// Chart
+const pts=[];let v=2.85;
+for(let i=0;i<30;i++){v+=(Math.random()-.52)*.12;v=Math.max(2.2,Math.min(3.2,v));pts.push(v);}
+pts[pts.length-1]=icxRate;
+const svg=document.getElementById('chart-svg');
+const W=1100,H=230,minY=1.8,maxY=3.4;
+const sY=v=>H-((v-minY)/(maxY-minY))*H;
+const sX=i=>(i/(pts.length-1))*W;
+let pathD=pts.map((v,i)=>`${i===0?'M':'L'}${sX(i).toFixed(1)},${sY(v).toFixed(1)}`).join(' ');
+const area=document.createElementNS('http://www.w3.org/2000/svg','path');
+area.setAttribute('d',pathD+` L${W},${H} L0,${H} Z`);area.setAttribute('fill','url(#grd)');svg.appendChild(area);
+const line=document.createElementNS('http://www.w3.org/2000/svg','path');
+line.setAttribute('d',pathD);line.setAttribute('fill','none');line.setAttribute('stroke','#4f8cff');line.setAttribute('stroke-width','2.5');svg.appendChild(line);
+const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+dot.setAttribute('cx',sX(pts.length-1));dot.setAttribute('cy',sY(pts[pts.length-1]));dot.setAttribute('r','5');dot.setAttribute('fill','#4f8cff');dot.setAttribute('stroke','#07080a');dot.setAttribute('stroke-width','2');svg.appendChild(dot);
+const xlEl=document.getElementById('x-labels');
+['30d ago','25d','20d','15d','10d','5d','Today'].forEach(l=>{const s=document.createElement('span');s.textContent=l;xlEl.appendChild(s);});
+
+// Live micro-updates
+setInterval(()=>{
+  providers.forEach(p=>{p.price+=(Math.random()-.5)*.02;p.price=Math.round(Math.max(1.2,p.price)*100)/100;});
+  const r=calcICX(providers);
+  document.getElementById('ref-rate').textContent=r.toFixed(2);
+  document.getElementById('stat-icx').textContent='$'+r.toFixed(2);
+  renderTable();
+},5000);
+}
+</script>
+</body>
+</html>
