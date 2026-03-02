@@ -167,6 +167,31 @@ tbody tr:hover .row-arrow{color:var(--accent)}
 .modal-foot-info{font-size:11px;color:var(--text3)}
 .modal-no-data{padding:20px 32px;color:var(--text3);font-size:13px;text-align:center}
 
+/* ========== FRESHNESS BADGES ========== */
+.freshness{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap}
+.fresh-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.freshness.f-fresh{color:var(--green)}.freshness.f-fresh .fresh-dot{background:var(--green)}
+.freshness.f-aging{color:var(--orange)}.freshness.f-aging .fresh-dot{background:var(--orange)}
+.freshness.f-stale{color:var(--red)}.freshness.f-stale .fresh-dot{background:var(--red)}
+
+/* ========== STALE DATA BANNER ========== */
+.stale-banner{background:rgba(255,92,114,.07);border-bottom:1px solid rgba(255,92,114,.18);padding:10px 28px;font-size:12px;color:var(--red);display:flex;align-items:center;gap:8px;letter-spacing:.2px}
+.stale-banner.hidden{display:none}
+
+/* ========== PROVIDER LINK ========== */
+.provider-link{color:inherit;text-decoration:none;border-bottom:1px solid transparent;transition:border-color .18s,color .18s}
+.provider-link:hover{border-bottom-color:var(--accent);color:var(--accent)}
+
+/* ========== MODAL RANGE TABS ========== */
+.range-tabs{display:flex;gap:4px;margin-bottom:10px}
+.range-tab{padding:3px 11px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text3);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
+.range-tab:hover{border-color:var(--border2);color:var(--text2)}
+.range-tab.active{background:rgba(79,140,255,.12);border-color:var(--accent);color:var(--accent)}
+
+/* ========== MODAL VISIT LINK ========== */
+.modal-visit{display:inline-flex;align-items:center;gap:5px;color:var(--accent);font-size:12px;font-weight:600;text-decoration:none;letter-spacing:.2px;transition:color .15s;font-family:'Inter',sans-serif}
+.modal-visit:hover{color:var(--text)}.modal-visit svg{width:11px;height:11px;flex-shrink:0}
+
 .chart-area{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:32px;margin-top:48px;position:relative;height:340px;overflow:hidden}
 .chart-area .label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:20px}
 .chart-canvas{width:100%;height:250px;position:relative}
@@ -308,6 +333,7 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
     <div class="section-title">H100 Spot Prices Across Providers</div>
     <div class="section-sub">Normalized to $/GPU-hour for a single NVIDIA H100 80GB in the US. On-demand rates only. Click any provider for price history.</div>
     <div class="table-wrap">
+      <div class="stale-banner hidden" id="stale-banner">⚠ Price data may be stale — last update was over 2 hours ago. Scrapers may be delayed.</div>
       <div class="table-header">
         <h3>Provider Price Feed</h3>
         <div class="badge"><span class="pulse"></span>Live Data</div>
@@ -332,7 +358,7 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
             <th class="sortable" data-col="tier">Tier <i class="sort-icon"></i></th>
             <th class="sortable sort-asc" data-col="price">$/GPU-hr <i class="sort-icon"></i></th>
             <th class="sortable" data-col="delta">Δ vs ICX <i class="sort-icon"></i></th>
-            <th>Config</th>
+            <th>Updated</th>
             <th>Status</th>
             <th></th>
           </tr>
@@ -424,14 +450,22 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
       <div class="modal-stat"><div class="sv" id="ms-pts">—</div><div class="sl">Data Points</div></div>
     </div>
     <div class="modal-chart-section">
-      <div class="modal-chart-label">Price History</div>
+      <div class="range-tabs" id="range-tabs">
+        <button class="range-tab" data-days="7">7D</button>
+        <button class="range-tab active" data-days="30">30D</button>
+        <button class="range-tab" data-days="90">90D</button>
+      </div>
+      <div class="modal-chart-label" id="modal-chart-label">Price History — Last 30 Days</div>
       <div class="modal-chart-inner" id="modal-chart-inner">
         <div class="modal-chart-loading" id="modal-loading"><div class="spinner"></div> Loading history…</div>
       </div>
     </div>
     <div class="modal-foot">
       <span class="modal-foot-info" id="modal-updated"></span>
-      <span class="modal-foot-info">Source: GetDeploying.com · Updated hourly</span>
+      <a class="modal-visit hidden" id="modal-visit" href="#" target="_blank" rel="noopener noreferrer">
+        Visit Provider
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10L10 2"/><path d="M5 2h5v5"/></svg>
+      </a>
     </div>
   </div>
 </div>
@@ -471,6 +505,15 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let providers = [];
 let icxRate   = 0;
+
+// ── Freshness helper ──────────────────────────────────────────────
+function freshnessInfo(scrapedAt){
+  if(!scrapedAt) return {cls:'f-stale', label:'—'};
+  const mins = (Date.now() - new Date(scrapedAt)) / 60000;
+  if(mins < 60)   return {cls:'f-fresh', label: mins < 2 ? 'just now' : `${Math.round(mins)}m ago`};
+  if(mins < 1440) return {cls:'f-aging', label:`${Math.round(mins/60)}h ago`};
+  return {cls:'f-stale', label:`${Math.round(mins/1440)}d ago`};
+}
 
 // ── Filter / sort state ───────────────────────────────────────────
 let filterTier  = 'all';
@@ -550,17 +593,21 @@ function renderTable(){
     list.length === providers.length ? '' : `${list.length} of ${providers.length}`;
 
   list.forEach(p => {
-    const d = p.price - icxRate;
+    const d  = p.price - icxRate;
     const sign = d >= 0 ? '+' : '';
     const cls  = d > 0 ? 'up' : 'down';
     const pct  = icxRate ? ((d/icxRate)*100).toFixed(1) : '0.0';
-    const tr   = document.createElement('tr');
+    const fr   = freshnessInfo(p.scrapedAt);
+    const nameCell = p.website
+      ? `<a href="${p.website}" target="_blank" rel="noopener noreferrer" class="provider-link" onclick="event.stopPropagation()">${p.name}</a>`
+      : p.name;
+    const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="provider-name">${p.name}</td>
+      <td class="provider-name">${nameCell}</td>
       <td><span class="tier-badge ${p.tierCls}">${p.tier}</span></td>
       <td class="price-val">$${p.price.toFixed(2)}</td>
       <td class="delta ${cls}">${sign}$${Math.abs(d).toFixed(2)} (${sign}${pct}%)</td>
-      <td style="color:var(--text2);font-size:12px">${p.config}</td>
+      <td><span class="freshness ${fr.cls}"><span class="fresh-dot"></span>${fr.label}</span></td>
       <td><span style="color:var(--${p.avail?'green':'red'});font-size:13px">● ${p.avail?'Available':'Unavailable'}</span></td>
       <td class="row-arrow">›</td>`;
     tr.addEventListener('click', () => openModal(p));
@@ -630,6 +677,24 @@ function drawChart(pts){
 const overlay  = document.getElementById('modal-overlay');
 const modalEl  = document.getElementById('modal');
 let selectedRow = null;
+let modalDays   = 30;
+let modalCurrentProvider = null;
+
+// ── Range tab wiring ──────────────────────────────────────────────
+document.querySelectorAll('.range-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    modalDays = parseInt(tab.dataset.days, 10);
+    document.querySelectorAll('.range-tab').forEach(t => t.classList.toggle('active', t===tab));
+    const labels = {7:'Last 7 Days', 30:'Last 30 Days', 90:'Last 90 Days'};
+    document.getElementById('modal-chart-label').textContent = 'Price History — '+labels[modalDays];
+    if(modalCurrentProvider){
+      const inner = document.getElementById('modal-chart-inner');
+      inner.innerHTML = '<div class="modal-chart-loading"><div class="spinner"></div> Loading…</div>';
+      ['ms-high','ms-low','ms-avg','ms-pts'].forEach(id=>{document.getElementById(id).textContent='—';});
+      fetchProviderHistory(modalCurrentProvider.providerId, modalCurrentProvider.price);
+    }
+  });
+});
 
 function openModal(p){
   // Header
@@ -656,6 +721,20 @@ function openModal(p){
     ? 'Last updated: '+new Date(p.scrapedAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})
     : '';
 
+  // Visit provider link
+  const visitEl = document.getElementById('modal-visit');
+  if(p.website){
+    visitEl.href = p.website;
+    visitEl.classList.remove('hidden');
+  } else {
+    visitEl.classList.add('hidden');
+  }
+
+  // Reset range tabs to 30D
+  document.querySelectorAll('.range-tab').forEach(t => t.classList.toggle('active', t.dataset.days==='30'));
+  modalDays = 30;
+  document.getElementById('modal-chart-label').textContent = 'Price History — Last 30 Days';
+
   // Reset chart
   const inner = document.getElementById('modal-chart-inner');
   inner.innerHTML = '<div class="modal-chart-loading"><div class="spinner"></div> Loading history…</div>';
@@ -668,6 +747,7 @@ function openModal(p){
     if(r.cells[0]&&r.cells[0].textContent===p.name){ selectedRow=r; r.classList.add('row-selected'); }
   });
 
+  modalCurrentProvider = p;
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 
@@ -679,6 +759,7 @@ function closeModal(){
   overlay.classList.remove('open');
   document.body.style.overflow = '';
   if(selectedRow){ selectedRow.classList.remove('row-selected'); selectedRow=null; }
+  modalCurrentProvider = null;
 }
 
 document.getElementById('modal-close').addEventListener('click', closeModal);
@@ -690,7 +771,7 @@ async function fetchProviderHistory(providerId, currentPrice){
   const inner = document.getElementById('modal-chart-inner');
 
   try {
-    const since = new Date(Date.now()-30*24*60*60*1000).toISOString();
+    const since = new Date(Date.now()-modalDays*24*60*60*1000).toISOString();
     const {data,error} = await db
       .from('price_snapshots')
       .select('price_usd,scraped_at')
@@ -777,7 +858,7 @@ function drawModalChart(pts, container){
 async function fetchPrices(){
   const {data,error} = await db
     .from('latest_prices')
-    .select('provider_id,name,tier,tier_class,config,price_usd,is_available,scraped_at');
+    .select('provider_id,name,tier,tier_class,config,website,price_usd,is_available,scraped_at');
 
   if(error){console.error('[ICX] prices:',error.message);return;}
   if(!data||!data.length) return;
@@ -788,10 +869,19 @@ async function fetchPrices(){
     tier:       r.tier,
     tierCls:    r.tier_class,
     config:     r.config,
+    website:    r.website||'',
     price:      parseFloat(r.price_usd),
     avail:      r.is_available,
     scrapedAt:  r.scraped_at,
   }));
+
+  // Stale data banner — show if most recent snapshot is > 2 hours old
+  const freshest = providers.reduce((best,p)=>{
+    if(!p.scrapedAt) return best;
+    return (!best || new Date(p.scrapedAt) > new Date(best)) ? p.scrapedAt : best;
+  }, null);
+  const staleMins = freshest ? (Date.now()-new Date(freshest))/60000 : Infinity;
+  document.getElementById('stale-banner').classList.toggle('hidden', staleMins < 120);
 
   const {data:icxRows} = await db
     .from('icx_rate_history')
