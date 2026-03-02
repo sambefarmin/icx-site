@@ -92,10 +92,9 @@ section{padding:100px 40px}
 .pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 table{width:100%;border-collapse:collapse}
-th{text-align:left;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);padding:14px 28px;border-bottom:1px solid var(--border)}
+th{text-align:left;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);padding:14px 28px;border-bottom:1px solid var(--border);white-space:nowrap}
 td{padding:16px 28px;font-size:14px;border-bottom:1px solid rgba(30,35,48,.4)}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(79,140,255,.03)}
 .provider-name{font-weight:600}
 .price-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:15px}
 .tier-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase}
@@ -103,6 +102,70 @@ tr:hover td{background:rgba(79,140,255,.03)}
 .tier-spec{background:rgba(79,140,255,.1);color:var(--accent)}
 .tier-mkt{background:rgba(255,170,68,.1);color:var(--orange)}
 .delta{font-family:'JetBrains Mono',monospace;font-size:12px}
+
+/* ========== FILTER BAR ========== */
+.filter-bar{padding:14px 28px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.filter-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-right:2px;white-space:nowrap}
+.filter-pill{padding:4px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.3px;cursor:pointer;transition:all .18s;white-space:nowrap}
+.filter-pill:hover{border-color:var(--accent);color:var(--text)}
+.filter-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.filter-pill.active-hyper{background:rgba(255,92,114,.15);border-color:var(--red);color:var(--red)}
+.filter-pill.active-spec{background:rgba(79,140,255,.15);border-color:var(--accent);color:var(--accent)}
+.filter-pill.active-mkt{background:rgba(255,170,68,.15);border-color:var(--orange);color:var(--orange)}
+.filter-pill.active-avail{background:var(--green3);border-color:var(--green2);color:var(--green)}
+.filter-sep{width:1px;height:18px;background:var(--border);margin:0 6px;flex-shrink:0}
+.filter-search{padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none;width:160px;transition:border-color .2s}
+.filter-search:focus{border-color:var(--accent)}
+.filter-search::placeholder{color:var(--text3)}
+.filter-count{font-size:11px;color:var(--text3);margin-left:auto;white-space:nowrap}
+
+/* ========== SORTABLE HEADERS ========== */
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--text2)}
+th.sortable .sort-icon{display:inline-block;margin-left:4px;opacity:.3;font-style:normal}
+th.sortable.sort-asc .sort-icon,th.sortable.sort-desc .sort-icon{opacity:1;color:var(--accent)}
+th.sortable.sort-asc .sort-icon::after{content:'↑'}
+th.sortable.sort-desc .sort-icon::after{content:'↓'}
+th.sortable:not(.sort-asc):not(.sort-desc) .sort-icon::after{content:'↕'}
+
+/* ========== CLICKABLE ROWS ========== */
+tbody tr{cursor:pointer;transition:background .12s}
+tbody tr:hover td{background:rgba(79,140,255,.05)}
+tbody tr.row-selected td{background:rgba(79,140,255,.09)}
+.row-arrow{color:var(--text3);font-size:11px;transition:color .15s}
+tbody tr:hover .row-arrow{color:var(--accent)}
+
+/* ========== MODAL ========== */
+.modal-overlay{position:fixed;inset:0;z-index:9000;background:rgba(7,8,10,.8);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:min(680px,95vw);max-height:88vh;overflow-y:auto;transform:translateY(24px);transition:transform .22s;scrollbar-width:thin}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-head{padding:28px 32px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.modal-name{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.modal-close{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s}
+.modal-close:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
+.modal-meta{padding:10px 32px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.modal-price-big{font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:700;line-height:1}
+.modal-badge-wrap{display:flex;gap:8px;align-items:center}
+.modal-delta-badge{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px}
+.modal-delta-badge.up{background:rgba(45,212,160,.12);color:var(--green)}
+.modal-delta-badge.down{background:rgba(255,92,114,.12);color:var(--red)}
+.modal-config{font-size:12px;color:var(--text3);margin-left:4px}
+.modal-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:20px 32px 0}
+.modal-stat{background:var(--bg3);padding:14px 12px;text-align:center;border-radius:4px}
+.modal-stat .sv{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;margin-bottom:3px}
+.modal-stat .sl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.modal-chart-section{padding:24px 32px 0}
+.modal-chart-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:12px}
+.modal-chart-inner{position:relative;height:150px}
+.modal-y-labels{position:absolute;left:0;top:0;bottom:0;display:flex;flex-direction:column;justify-content:space-between;padding:2px 0}
+.modal-y-labels span{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3)}
+.modal-chart-loading{display:flex;align-items:center;justify-content:center;height:120px;color:var(--text3);font-size:12px;gap:8px}
+.spinner{width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.modal-foot{padding:16px 32px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+.modal-foot-info{font-size:11px;color:var(--text3)}
+.modal-no-data{padding:20px 32px;color:var(--text3);font-size:13px;text-align:center}
 
 .chart-area{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:32px;margin-top:48px;position:relative;height:340px;overflow:hidden}
 .chart-area .label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:20px}
@@ -171,9 +234,10 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
   table{font-size:12px}
   th,td{padding:12px 16px}
   .gate-input,.gate-btn{width:280px}
+  .modal-stats-row{grid-template-columns:1fr 1fr}
+  .filter-bar{gap:4px}
 }
 </style>
-<!-- Supabase client -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
@@ -192,7 +256,7 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
   </div>
 </div>
 
-<!-- ========== MAIN SITE (hidden until auth) ========== -->
+<!-- ========== MAIN SITE ========== -->
 <div id="site">
 
 <nav>
@@ -242,14 +306,37 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
   <div class="container">
     <div class="section-tag">Market Data</div>
     <div class="section-title">H100 Spot Prices Across Providers</div>
-    <div class="section-sub">Normalized to $/GPU-hour for a single NVIDIA H100 80GB in the US. On-demand rates only. Updated daily.</div>
+    <div class="section-sub">Normalized to $/GPU-hour for a single NVIDIA H100 80GB in the US. On-demand rates only. Click any provider for price history.</div>
     <div class="table-wrap">
       <div class="table-header">
         <h3>Provider Price Feed</h3>
         <div class="badge"><span class="pulse"></span>Live Data</div>
       </div>
+      <!-- Filter bar -->
+      <div class="filter-bar" id="filter-bar">
+        <span class="filter-label">Tier</span>
+        <button class="filter-pill active" data-tier="all">All</button>
+        <button class="filter-pill" data-tier="Hyperscaler">Hyperscaler</button>
+        <button class="filter-pill" data-tier="Specialist">Specialist</button>
+        <button class="filter-pill" data-tier="Marketplace">Marketplace</button>
+        <div class="filter-sep"></div>
+        <button class="filter-pill" id="avail-filter">Available Only</button>
+        <div class="filter-sep"></div>
+        <input class="filter-search" id="provider-search" type="text" placeholder="Search provider…">
+        <span class="filter-count" id="filter-count"></span>
+      </div>
       <table id="provider-table">
-        <thead><tr><th>Provider</th><th>Tier</th><th>$/GPU-hr</th><th>Δ vs ICX</th><th>Config</th><th>Status</th></tr></thead>
+        <thead>
+          <tr>
+            <th class="sortable" data-col="name">Provider <i class="sort-icon"></i></th>
+            <th class="sortable" data-col="tier">Tier <i class="sort-icon"></i></th>
+            <th class="sortable sort-asc" data-col="price">$/GPU-hr <i class="sort-icon"></i></th>
+            <th class="sortable" data-col="delta">Δ vs ICX <i class="sort-icon"></i></th>
+            <th>Config</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
         <tbody></tbody>
       </table>
     </div>
@@ -313,6 +400,42 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
 
 <footer>&copy; 2026 ICX Global. The Reference Rate for AI Compute. All rights reserved.</footer>
 
+<!-- ========== PROVIDER MODAL ========== -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-name" id="modal-name">—</div>
+      </div>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div class="modal-meta">
+      <div class="modal-price-big" id="modal-price">—</div>
+      <div class="modal-badge-wrap">
+        <span class="tier-badge" id="modal-tier-badge"></span>
+        <span class="modal-delta-badge" id="modal-delta-badge"></span>
+      </div>
+      <span class="modal-config" id="modal-config"></span>
+    </div>
+    <div class="modal-stats-row">
+      <div class="modal-stat"><div class="sv" id="ms-high">—</div><div class="sl">Period High</div></div>
+      <div class="modal-stat"><div class="sv" id="ms-low">—</div><div class="sl">Period Low</div></div>
+      <div class="modal-stat"><div class="sv" id="ms-avg">—</div><div class="sl">Period Avg</div></div>
+      <div class="modal-stat"><div class="sv" id="ms-pts">—</div><div class="sl">Data Points</div></div>
+    </div>
+    <div class="modal-chart-section">
+      <div class="modal-chart-label">Price History</div>
+      <div class="modal-chart-inner" id="modal-chart-inner">
+        <div class="modal-chart-loading" id="modal-loading"><div class="spinner"></div> Loading history…</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <span class="modal-foot-info" id="modal-updated"></span>
+      <span class="modal-foot-info">Source: GetDeploying.com · Updated hourly</span>
+    </div>
+  </div>
+</div>
+
 </div><!-- /site -->
 
 <script>
@@ -337,15 +460,11 @@ function tryLogin(){
 document.getElementById('gate-submit').addEventListener('click', tryLogin);
 pwInput.addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
 
-// ========== SITE INIT (only after auth) ==========
+// ========== SITE INIT ==========
 function initSite(){
 
-// ── Supabase config ──────────────────────────────────────────────
-// Replace these two values with your Supabase project URL and anon key.
-// Find them at: supabase.com → Project Settings → API
 const SUPABASE_URL      = 'https://xelzbbgbfhkdlqfzawpb.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_WwVV9q2p27ENF7fDx69caQ_jpExegjf';
-// ─────────────────────────────────────────────────────────────────
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -353,144 +472,340 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let providers = [];
 let icxRate   = 0;
 
-// Set settlement date
-const now = new Date();
-document.getElementById('settle-date').textContent =
-  now.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+// ── Filter / sort state ───────────────────────────────────────────
+let filterTier  = 'all';
+let filterAvail = false;
+let filterSearch= '';
+let sortCol     = 'price';
+let sortDir     = 'asc';
 
-// ── Table render ─────────────────────────────────────────────────
+document.getElementById('settle-date').textContent =
+  new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+
+// ── Filter bar wiring ─────────────────────────────────────────────
+document.querySelectorAll('[data-tier]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterTier = btn.dataset.tier;
+    document.querySelectorAll('[data-tier]').forEach(b => {
+      b.className = 'filter-pill' + (b.dataset.tier === filterTier
+        ? (filterTier === 'all' ? ' active'
+          : filterTier === 'Hyperscaler' ? ' active-hyper'
+          : filterTier === 'Specialist'  ? ' active-spec'
+          : ' active-mkt')
+        : '');
+    });
+    renderTable();
+  });
+});
+
+document.getElementById('avail-filter').addEventListener('click', function(){
+  filterAvail = !filterAvail;
+  this.className = 'filter-pill' + (filterAvail ? ' active-avail' : '');
+  renderTable();
+});
+
+document.getElementById('provider-search').addEventListener('input', function(){
+  filterSearch = this.value.toLowerCase();
+  renderTable();
+});
+
+// ── Sortable header wiring ────────────────────────────────────────
+document.querySelectorAll('th.sortable').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if(sortCol === col){ sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
+    else { sortCol = col; sortDir = col === 'name' || col === 'tier' ? 'asc' : 'asc'; }
+    document.querySelectorAll('th.sortable').forEach(t => t.classList.remove('sort-asc','sort-desc'));
+    th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+    renderTable();
+  });
+});
+
+// ── Apply filters + sort ──────────────────────────────────────────
+function filteredProviders(){
+  let list = [...providers];
+  if(filterTier !== 'all') list = list.filter(p => p.tier === filterTier);
+  if(filterAvail) list = list.filter(p => p.avail);
+  if(filterSearch) list = list.filter(p => p.name.toLowerCase().includes(filterSearch));
+  list.sort((a, b) => {
+    let va, vb;
+    if(sortCol === 'name')  { va=a.name; vb=b.name; }
+    else if(sortCol === 'tier')  { va=a.tier; vb=b.tier; }
+    else if(sortCol === 'price') { va=a.price; vb=b.price; }
+    else if(sortCol === 'delta') { va=a.price-icxRate; vb=b.price-icxRate; }
+    else { va=a.price; vb=b.price; }
+    if(va < vb) return sortDir === 'asc' ? -1 : 1;
+    if(va > vb) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+  return list;
+}
+
+// ── Table render ──────────────────────────────────────────────────
 const tbody = document.querySelector('#provider-table tbody');
 function renderTable(){
-  tbody.innerHTML='';
-  [...providers].sort((a,b)=>a.price-b.price).forEach(p=>{
-    const d=p.price-icxRate,sign=d>=0?'+':'',cls=d>0?'up':'down',pct=((d/icxRate)*100).toFixed(1);
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td class="provider-name">${p.name}</td><td><span class="tier-badge ${p.tierCls}">${p.tier}</span></td><td class="price-val">$${p.price.toFixed(2)}</td><td class="delta ${cls}">${sign}$${Math.abs(d).toFixed(2)} (${sign}${pct}%)</td><td style="color:var(--text2)">${p.config}</td><td><span style="color:var(--${p.avail?'green':'red'})">● ${p.avail?'Available':'Unavailable'}</span></td>`;
+  tbody.innerHTML = '';
+  const list = filteredProviders();
+  document.getElementById('filter-count').textContent =
+    list.length === providers.length ? '' : `${list.length} of ${providers.length}`;
+
+  list.forEach(p => {
+    const d = p.price - icxRate;
+    const sign = d >= 0 ? '+' : '';
+    const cls  = d > 0 ? 'up' : 'down';
+    const pct  = icxRate ? ((d/icxRate)*100).toFixed(1) : '0.0';
+    const tr   = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="provider-name">${p.name}</td>
+      <td><span class="tier-badge ${p.tierCls}">${p.tier}</span></td>
+      <td class="price-val">$${p.price.toFixed(2)}</td>
+      <td class="delta ${cls}">${sign}$${Math.abs(d).toFixed(2)} (${sign}${pct}%)</td>
+      <td style="color:var(--text2);font-size:12px">${p.config}</td>
+      <td><span style="color:var(--${p.avail?'green':'red'});font-size:13px">● ${p.avail?'Available':'Unavailable'}</span></td>
+      <td class="row-arrow">›</td>`;
+    tr.addEventListener('click', () => openModal(p));
     tbody.appendChild(tr);
   });
 }
 
-// ── Ticker render ────────────────────────────────────────────────
+// ── Ticker ────────────────────────────────────────────────────────
 function renderTicker(){
-  const tickerEl=document.getElementById('ticker');
-  let tHTML='';
-  for(let i=0;i<2;i++){providers.forEach(p=>{const d=p.price-icxRate,s=d>=0?'+':'',c=d>=0?'up':'down';tHTML+=`<div class="ticker-item"><span class="name">${p.name}</span> $${p.price.toFixed(2)} <span class="${c}">${s}${((d/icxRate)*100).toFixed(1)}%</span></div>`;});}
-  tickerEl.innerHTML=tHTML;
+  const el = document.getElementById('ticker');
+  let h = '';
+  for(let i=0;i<2;i++){providers.forEach(p=>{
+    const d=p.price-icxRate,s=d>=0?'+':'',c=d>=0?'up':'down';
+    h+=`<div class="ticker-item"><span class="name">${p.name}</span> $${p.price.toFixed(2)} <span class="${c}">${s}${icxRate?((d/icxRate)*100).toFixed(1):0}%</span></div>`;
+  });}
+  el.innerHTML = h;
 }
 
-// ── Stats row ────────────────────────────────────────────────────
+// ── Stats row ─────────────────────────────────────────────────────
 function renderStats(){
-  document.getElementById('ref-rate').textContent  = icxRate.toFixed(2);
-  document.getElementById('stat-icx').textContent  = '$'+icxRate.toFixed(2);
+  document.getElementById('ref-rate').textContent   = icxRate.toFixed(2);
+  document.getElementById('stat-icx').textContent   = '$'+icxRate.toFixed(2);
   document.getElementById('prov-count').textContent = providers.filter(p=>p.avail).length;
-
-  const hyperPrices = providers.filter(p=>p.tier==='Hyperscaler').map(p=>p.price);
-  const specPrices  = providers.filter(p=>p.tier==='Specialist').map(p=>p.price);
-  const allPrices   = providers.map(p=>p.price);
-
-  if(hyperPrices.length){
-    const avg = hyperPrices.reduce((a,b)=>a+b,0)/hyperPrices.length;
-    document.getElementById('stat-hyper-avg').textContent='$'+avg.toFixed(2);
-  }
-  if(specPrices.length){
-    document.getElementById('stat-spec-low').textContent='$'+Math.min(...specPrices).toFixed(2);
-  }
-  if(allPrices.length>1){
-    const disp = (Math.max(...allPrices)/Math.min(...allPrices)).toFixed(1)+'×';
-    document.getElementById('stat-dispersion').textContent=disp;
-  }
+  const hp = providers.filter(p=>p.tier==='Hyperscaler').map(p=>p.price);
+  const sp = providers.filter(p=>p.tier==='Specialist').map(p=>p.price);
+  const ap = providers.map(p=>p.price);
+  if(hp.length) document.getElementById('stat-hyper-avg').textContent='$'+(hp.reduce((a,b)=>a+b,0)/hp.length).toFixed(2);
+  if(sp.length) document.getElementById('stat-spec-low').textContent ='$'+Math.min(...sp).toFixed(2);
+  if(ap.length>1) document.getElementById('stat-dispersion').textContent=(Math.max(...ap)/Math.min(...ap)).toFixed(1)+'×';
 }
 
-// ── 24h change & 7d range from history ──────────────────────────
 function render24hAnd7d(history){
   if(!history||history.length<2) return;
-  const latest  = history[history.length-1];
-  const dayAgo  = history.length>=24 ? history[history.length-24] : history[0];
-  const diff    = latest - dayAgo;
-  const pct     = ((diff/dayAgo)*100).toFixed(1);
-  const sign    = diff>=0?'+':'';
-  const cls     = diff>=0?'up':'down';
+  const latest = history[history.length-1];
+  const dayAgo = history.length>=24 ? history[history.length-24] : history[0];
+  const diff   = latest - dayAgo, pct=((diff/dayAgo)*100).toFixed(1), sign=diff>=0?'+':'';
+  const cls    = diff>=0?'up':'down';
   document.getElementById('daily-chg').className='val '+cls;
   document.getElementById('daily-chg').textContent=`${sign}$${Math.abs(diff).toFixed(2)} (${sign}${pct}%)`;
-
-  const wkPrices = history.slice(-168); // last 7 days of hourly points
-  const lo = Math.min(...wkPrices).toFixed(2);
-  const hi = Math.max(...wkPrices).toFixed(2);
-  document.getElementById('week-range').textContent=`$${lo} – $${hi}`;
+  const wk = history.slice(-168);
+  document.getElementById('week-range').textContent=`$${Math.min(...wk).toFixed(2)} – $${Math.max(...wk).toFixed(2)}`;
 }
 
-// ── Chart ────────────────────────────────────────────────────────
+// ── Main ICX chart ────────────────────────────────────────────────
 function drawChart(pts){
   const svg=document.getElementById('chart-svg');
-  // Remove any previously drawn paths/circles (keep <defs>)
   Array.from(svg.children).forEach(c=>{ if(c.tagName!=='defs') svg.removeChild(c); });
   if(!pts||pts.length<2) return;
-
   const W=1100,H=230,minY=1.8,maxY=3.4;
   const sY=v=>H-((v-minY)/(maxY-minY))*H;
   const sX=i=>(i/(pts.length-1))*W;
-  let pathD=pts.map((v,i)=>`${i===0?'M':'L'}${sX(i).toFixed(1)},${sY(v).toFixed(1)}`).join(' ');
-
+  let d=pts.map((v,i)=>`${i===0?'M':'L'}${sX(i).toFixed(1)},${sY(v).toFixed(1)}`).join(' ');
   const area=document.createElementNS('http://www.w3.org/2000/svg','path');
-  area.setAttribute('d',pathD+` L${W},${H} L0,${H} Z`);
-  area.setAttribute('fill','url(#grd)');
-  svg.appendChild(area);
-
+  area.setAttribute('d',d+` L${W},${H} L0,${H} Z`);area.setAttribute('fill','url(#grd)');svg.appendChild(area);
   const line=document.createElementNS('http://www.w3.org/2000/svg','path');
-  line.setAttribute('d',pathD);
-  line.setAttribute('fill','none');
-  line.setAttribute('stroke','#4f8cff');
-  line.setAttribute('stroke-width','2.5');
-  svg.appendChild(line);
-
+  line.setAttribute('d',d);line.setAttribute('fill','none');line.setAttribute('stroke','#4f8cff');line.setAttribute('stroke-width','2.5');svg.appendChild(line);
   const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
-  dot.setAttribute('cx',sX(pts.length-1));
-  dot.setAttribute('cy',sY(pts[pts.length-1]));
-  dot.setAttribute('r','5');
-  dot.setAttribute('fill','#4f8cff');
-  dot.setAttribute('stroke','#07080a');
-  dot.setAttribute('stroke-width','2');
-  svg.appendChild(dot);
-
-  const xlEl=document.getElementById('x-labels');
-  xlEl.innerHTML='';
-  ['30d ago','25d','20d','15d','10d','5d','Today'].forEach(l=>{
-    const s=document.createElement('span');s.textContent=l;xlEl.appendChild(s);
-  });
+  dot.setAttribute('cx',sX(pts.length-1));dot.setAttribute('cy',sY(pts[pts.length-1]));
+  dot.setAttribute('r','5');dot.setAttribute('fill','#4f8cff');dot.setAttribute('stroke','#07080a');dot.setAttribute('stroke-width','2');svg.appendChild(dot);
+  const xlEl=document.getElementById('x-labels');xlEl.innerHTML='';
+  ['30d ago','25d','20d','15d','10d','5d','Today'].forEach(l=>{const s=document.createElement('span');s.textContent=l;xlEl.appendChild(s);});
 }
 
-// ── Fetch prices from Supabase ───────────────────────────────────
-async function fetchPrices(){
-  const {data,error}=await db
-    .from('latest_prices')
-    .select('name,tier,tier_class,config,price_usd,is_available');
-  if(error){console.error('[ICX] prices error:',error.message);return;}
-  if(!data||data.length===0) return;
+// ═══════════════════════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════════════════════
+const overlay  = document.getElementById('modal-overlay');
+const modalEl  = document.getElementById('modal');
+let selectedRow = null;
 
-  providers=data.map(r=>({
-    name:  r.name,
-    tier:  r.tier,
-    tierCls: r.tier_class,
-    config:  r.config,
-    price:   parseFloat(r.price_usd),
-    avail:   r.is_available,
+function openModal(p){
+  // Header
+  document.getElementById('modal-name').textContent  = p.name;
+  document.getElementById('modal-price').textContent = '$'+p.price.toFixed(2);
+  document.getElementById('modal-config').textContent= '· '+p.config;
+
+  // Tier badge
+  const tb = document.getElementById('modal-tier-badge');
+  tb.textContent  = p.tier;
+  tb.className    = 'tier-badge '+p.tierCls;
+
+  // Delta vs ICX
+  const d    = p.price - icxRate;
+  const sign = d>=0 ? '+' : '';
+  const pct  = icxRate ? ((d/icxRate)*100).toFixed(1) : '0.0';
+  const db   = document.getElementById('modal-delta-badge');
+  db.textContent = `${sign}$${Math.abs(d).toFixed(2)} vs ICX (${sign}${pct}%)`;
+  db.className   = 'modal-delta-badge '+(d>=0?'down':'up'); // down=expensive, up=cheap
+
+  // Reset stats
+  ['ms-high','ms-low','ms-avg','ms-pts'].forEach(id=>{document.getElementById(id).textContent='—';});
+  document.getElementById('modal-updated').textContent = p.scrapedAt
+    ? 'Last updated: '+new Date(p.scrapedAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})
+    : '';
+
+  // Reset chart
+  const inner = document.getElementById('modal-chart-inner');
+  inner.innerHTML = '<div class="modal-chart-loading"><div class="spinner"></div> Loading history…</div>';
+
+  // Highlight row
+  if(selectedRow) selectedRow.classList.remove('row-selected');
+  selectedRow = document.querySelector(`tbody tr:has(td:first-child:not(:empty))`);
+  // Find the right row by name
+  Array.from(document.querySelectorAll('tbody tr')).forEach(r=>{
+    if(r.cells[0]&&r.cells[0].textContent===p.name){ selectedRow=r; r.classList.add('row-selected'); }
+  });
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Fetch history
+  fetchProviderHistory(p.providerId, p.price);
+}
+
+function closeModal(){
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+  if(selectedRow){ selectedRow.classList.remove('row-selected'); selectedRow=null; }
+}
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+overlay.addEventListener('click', e=>{ if(e.target===overlay) closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+// ── Fetch provider price history ──────────────────────────────
+async function fetchProviderHistory(providerId, currentPrice){
+  const inner = document.getElementById('modal-chart-inner');
+
+  try {
+    const since = new Date(Date.now()-30*24*60*60*1000).toISOString();
+    const {data,error} = await db
+      .from('price_snapshots')
+      .select('price_usd,scraped_at')
+      .eq('provider_id', providerId)
+      .gte('scraped_at', since)
+      .order('scraped_at',{ascending:true});
+
+    if(error) throw error;
+
+    let pts = (data||[]).map(r=>parseFloat(r.price_usd));
+
+    // If only one data point (initial seed), show flat line at current price
+    if(pts.length < 2){ pts = [currentPrice, currentPrice]; }
+
+    // Stats
+    const hi  = Math.max(...pts), lo = Math.min(...pts);
+    const avg = pts.reduce((a,b)=>a+b,0)/pts.length;
+    document.getElementById('ms-high').textContent = '$'+hi.toFixed(2);
+    document.getElementById('ms-low').textContent  = '$'+lo.toFixed(2);
+    document.getElementById('ms-avg').textContent  = '$'+avg.toFixed(2);
+    document.getElementById('ms-pts').textContent  = (data||[]).length;
+
+    drawModalChart(pts, inner);
+
+  } catch(err){
+    inner.innerHTML = `<div class="modal-no-data">Could not load history — ${err.message}</div>`;
+  }
+}
+
+// ── Modal chart (SVG) ─────────────────────────────────────────
+function drawModalChart(pts, container){
+  container.innerHTML = '';
+
+  const W=900, H=120;
+  const minY = Math.min(...pts)*0.98, maxY = Math.max(...pts)*1.02;
+  const sY   = v => H-((v-minY)/(maxY-minY||1))*H;
+  const sX   = i => (i/(pts.length-1||1))*W;
+
+  // Y labels
+  const ylWrap = document.createElement('div');
+  ylWrap.className = 'modal-y-labels';
+  [maxY,(maxY+minY)/2,minY].forEach(v=>{
+    const s=document.createElement('span');s.textContent='$'+v.toFixed(2);ylWrap.appendChild(s);
+  });
+  container.appendChild(ylWrap);
+
+  // SVG
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.setAttribute('preserveAspectRatio','none');
+  svg.style.cssText='margin-left:40px;width:calc(100% - 40px);height:100%';
+
+  const gradId = 'mgrd';
+  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+  defs.innerHTML=`<linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(79,140,255,.2)"/><stop offset="100%" stop-color="rgba(79,140,255,0)"/></linearGradient>`;
+  svg.appendChild(defs);
+
+  const pathD = pts.map((v,i)=>`${i===0?'M':'L'}${sX(i).toFixed(1)},${sY(v).toFixed(1)}`).join(' ');
+
+  const area = document.createElementNS('http://www.w3.org/2000/svg','path');
+  area.setAttribute('d', pathD+` L${W},${H} L0,${H} Z`);
+  area.setAttribute('fill',`url(#${gradId})`);
+  svg.appendChild(area);
+
+  const line = document.createElementNS('http://www.w3.org/2000/svg','path');
+  line.setAttribute('d', pathD);
+  line.setAttribute('fill','none');
+  line.setAttribute('stroke','#4f8cff');
+  line.setAttribute('stroke-width','2');
+  svg.appendChild(line);
+
+  // Current price dot
+  const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  dot.setAttribute('cx',sX(pts.length-1));dot.setAttribute('cy',sY(pts[pts.length-1]));
+  dot.setAttribute('r','4');dot.setAttribute('fill','#4f8cff');dot.setAttribute('stroke','#0d0f14');dot.setAttribute('stroke-width','2');
+  svg.appendChild(dot);
+
+  container.appendChild(svg);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DATA FETCHING
+// ═══════════════════════════════════════════════════════════════
+async function fetchPrices(){
+  const {data,error} = await db
+    .from('latest_prices')
+    .select('provider_id,name,tier,tier_class,config,price_usd,is_available,scraped_at');
+
+  if(error){console.error('[ICX] prices:',error.message);return;}
+  if(!data||!data.length) return;
+
+  providers = data.map(r=>({
+    providerId: r.provider_id,
+    name:       r.name,
+    tier:       r.tier,
+    tierCls:    r.tier_class,
+    config:     r.config,
+    price:      parseFloat(r.price_usd),
+    avail:      r.is_available,
+    scrapedAt:  r.scraped_at,
   }));
 
-  // Get latest ICX rate from history table
-  const {data:icxRows}=await db
+  const {data:icxRows} = await db
     .from('icx_rate_history')
     .select('rate')
     .order('computed_at',{ascending:false})
     .limit(1);
 
   if(icxRows&&icxRows.length){
-    icxRate=parseFloat(icxRows[0].rate);
+    icxRate = parseFloat(icxRows[0].rate);
   } else {
-    // Fallback: compute locally from current prices
     const s=[...providers].map(p=>p.price).sort((a,b)=>a-b);
     const t=Math.floor(s.length*.15);
     const tr=s.slice(t,s.length-t);
-    icxRate=tr.length ? tr.reduce((a,b)=>a+b,0)/tr.length : 0;
+    icxRate = tr.length ? tr.reduce((a,b)=>a+b,0)/tr.length : 0;
   }
 
   renderTable();
@@ -498,28 +813,23 @@ async function fetchPrices(){
   renderStats();
 }
 
-// ── Fetch 30-day history from Supabase ───────────────────────────
 async function fetchHistory(){
-  const since=new Date(Date.now()-30*24*60*60*1000).toISOString();
-  const {data,error}=await db
+  const since = new Date(Date.now()-30*24*60*60*1000).toISOString();
+  const {data,error} = await db
     .from('icx_rate_history')
     .select('rate,computed_at')
     .gte('computed_at',since)
     .order('computed_at',{ascending:true});
 
-  if(error){console.error('[ICX] history error:',error.message);return;}
-  if(!data||data.length<2) return;
-
-  const rates=data.map(r=>parseFloat(r.rate));
+  if(error||!data||data.length<2) return;
+  const rates = data.map(r=>parseFloat(r.rate));
   drawChart(rates);
   render24hAnd7d(rates);
 }
 
-// ── Boot ─────────────────────────────────────────────────────────
+// Boot
 fetchPrices();
 fetchHistory();
-
-// Refresh every 5 minutes
 setInterval(()=>{ fetchPrices(); fetchHistory(); }, 5*60*1000);
 
 } // end initSite
