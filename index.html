@@ -858,7 +858,7 @@ function drawModalChart(pts, container){
 async function fetchPrices(){
   const {data,error} = await db
     .from('latest_prices')
-    .select('provider_id,name,tier,tier_class,config,website,price_usd,is_available,scraped_at');
+    .select('*');
 
   if(error){console.error('[ICX] prices:',error.message);return;}
   if(!data||!data.length) return;
