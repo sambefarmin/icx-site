@@ -1,0 +1,12 @@
+{
+  "name": "icx-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ICX H100 Reference Rate – backend scraper & API",
+  "engines": {
+    "node": ">=18.x"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
