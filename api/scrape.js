@@ -6,18 +6,24 @@
  *
  * Also callable manually:
  *   GET /api/scrape?secret=YOUR_CRON_SECRET
+ *
+ * ICX Rate methodology:
+ *  - Only H100 SXM5 80GB (NVLink) providers included. PCIe excluded.
+ *  - Only is_available = true providers counted.
+ *  - Minimum panel of 8 SXM5 providers required to publish a rate.
+ *  - Trimmed mean: drop bottom and top 15%, average the rest.
  */
 
-import { supabase }  from '../lib/supabase.js';
-import { SCRAPERS }  from '../lib/scrapers.js';
+import { supabase }    from '../lib/supabase.js';
+import { SCRAPERS }    from '../lib/scrapers.js';
 import { calcICXRate } from '../lib/icx.js';
 
 export const config = { maxDuration: 60 }; // allow up to 60s for all HTTP calls
 
 export default async function handler(req, res) {
   // Guard: only Vercel cron calls or requests with the secret token
-  const secret = process.env.CRON_SECRET;
-  const authHeader = req.headers['authorization'] ?? '';
+  const secret      = process.env.CRON_SECRET;
+  const authHeader  = req.headers['authorization'] ?? '';
   const querySecret = req.query.secret ?? '';
 
   if (secret && authHeader !== `Bearer ${secret}` && querySecret !== secret) {
@@ -25,10 +31,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Load all active providers from DB
+    // 1. Load all active providers (include gpu_variant for correct gpu_type tagging)
     const { data: providers, error: provErr } = await supabase
       .from('providers')
-      .select('id, name, source_type')
+      .select('id, name, source_type, gpu_variant')
       .eq('is_active', true);
 
     if (provErr) throw provErr;
@@ -49,35 +55,41 @@ export default async function handler(req, res) {
         continue;
       }
 
+      // Tag snapshot with correct gpu_type based on provider variant
+      const gpuType = provider.gpu_variant === 'PCIe'
+        ? 'H100 PCIe 80GB'
+        : 'H100 SXM5 80GB';
+
       const { error: insertErr } = await supabase
         .from('price_snapshots')
         .insert({
           provider_id:  provider.id,
           price_usd:    scraped.price,
           is_available: scraped.isAvailable,
-          gpu_type:     'H100 SXM5 80GB',
+          gpu_type:     gpuType,
           raw_data:     scraped.rawData ?? null,
         });
 
       if (insertErr) {
         results.errors.push({ provider: provider.name, reason: insertErr.message });
       } else {
-        results.scraped.push({ provider: provider.name, price: scraped.price });
+        results.scraped.push({ provider: provider.name, price: scraped.price, gpuType });
       }
     }
 
-    // 3. Fetch latest price per provider to compute ICX rate
+    // 3. Fetch latest prices — filter to SXM5 + available only for ICX H100 SXM5 rate
     const { data: latestPrices, error: lpErr } = await supabase
       .from('latest_prices')
-      .select('price_usd, is_available');
+      .select('price_usd, is_available, gpu_type');
 
     if (lpErr) throw lpErr;
 
-    const availablePrices = latestPrices
-      .filter(r => r.is_available)
+    const sxm5Prices = latestPrices
+      .filter(r => r.is_available && r.gpu_type === 'H100 SXM5 80GB')
       .map(r => parseFloat(r.price_usd));
 
-    const icx = calcICXRate(availablePrices);
+    // calcICXRate returns null if panel < 8 (minimum requirement)
+    const icx = calcICXRate(sxm5Prices);
 
     if (icx) {
       await supabase.from('icx_rate_history').insert({
@@ -89,9 +101,11 @@ export default async function handler(req, res) {
     }
 
     return res.status(200).json({
-      ok:        true,
-      icxRate:   icx?.rate ?? null,
-      timestamp: new Date().toISOString(),
+      ok:           true,
+      icxRate:      icx?.rate ?? null,
+      panelSize:    sxm5Prices.length,
+      panelMet:     icx !== null,
+      timestamp:    new Date().toISOString(),
       results,
     });
 

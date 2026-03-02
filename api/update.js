@@ -1,7 +1,6 @@
 /**
  * POST /api/update
- * Manually submit a price for a provider that doesn't have a public API
- * (AWS, GCP, CoreWeave, Crusoe, Voltage Park, etc.).
+ * Manually submit a price for a provider that doesn't have a public API.
  *
  * Auth: Bearer token matching ADMIN_SECRET env var.
  *
@@ -13,19 +12,19 @@
  *   region:       "us-east-1" // optional
  * }
  *
- * After inserting, recomputes and stores the ICX rate.
+ * gpu_type is set automatically from the provider's gpu_variant column.
+ * After inserting, recomputes the ICX H100 SXM5 rate using available
+ * SXM5 providers only, with minimum panel enforcement (8 providers).
  */
 
 import { supabase }    from '../lib/supabase.js';
 import { calcICXRate } from '../lib/icx.js';
 
 export default async function handler(req, res) {
-  // Only accept POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // Auth check
   const secret     = process.env.ADMIN_SECRET;
   const authHeader = req.headers['authorization'] ?? '';
   if (!secret || authHeader !== `Bearer ${secret}`) {
@@ -42,10 +41,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Look up provider ID
+    // Look up provider — include gpu_variant for correct tagging
     const { data: prov, error: provErr } = await supabase
       .from('providers')
-      .select('id, name')
+      .select('id, name, gpu_variant')
       .eq('name', providerName)
       .eq('is_active', true)
       .single();
@@ -54,6 +53,11 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: `Provider "${providerName}" not found` });
     }
 
+    // Set gpu_type automatically from the provider's variant
+    const gpuType = prov.gpu_variant === 'PCIe'
+      ? 'H100 PCIe 80GB'
+      : 'H100 SXM5 80GB';
+
     // Insert price snapshot
     const { error: insertErr } = await supabase
       .from('price_snapshots')
@@ -61,24 +65,25 @@ export default async function handler(req, res) {
         provider_id:  prov.id,
         price_usd:    priceUsd,
         is_available: isAvailable,
-        gpu_type:     'H100 SXM5 80GB',
+        gpu_type:     gpuType,
         region:       region,
       });
 
     if (insertErr) throw insertErr;
 
-    // Recompute ICX rate from latest prices
+    // Recompute ICX H100 SXM5 rate — SXM5 + available only
     const { data: latestPrices, error: lpErr } = await supabase
       .from('latest_prices')
-      .select('price_usd, is_available');
+      .select('price_usd, is_available, gpu_type');
 
     if (lpErr) throw lpErr;
 
-    const availablePrices = latestPrices
-      .filter(r => r.is_available)
+    const sxm5Prices = latestPrices
+      .filter(r => r.is_available && r.gpu_type === 'H100 SXM5 80GB')
       .map(r => parseFloat(r.price_usd));
 
-    const icx = calcICXRate(availablePrices);
+    // Returns null if panel < 8
+    const icx = calcICXRate(sxm5Prices);
 
     if (icx) {
       await supabase.from('icx_rate_history').insert({
@@ -90,10 +95,13 @@ export default async function handler(req, res) {
     }
 
     return res.status(200).json({
-      ok:       true,
-      provider: prov.name,
-      price:    priceUsd,
-      icxRate:  icx?.rate ?? null,
+      ok:        true,
+      provider:  prov.name,
+      gpuType,
+      price:     priceUsd,
+      icxRate:   icx?.rate ?? null,
+      panelSize: sxm5Prices.length,
+      panelMet:  icx !== null,
     });
 
   } catch (err) {

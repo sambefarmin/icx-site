@@ -301,11 +301,11 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
 
 <section class="hero">
   <div class="hero-tag">The Reference Rate for AI Compute</div>
-  <h1>ICX H100<br>US Spot</h1>
-  <p>A transparent, repeatable, daily reference rate for deliverable AI compute. One instrument. One anchor. Built so the market can mature.</p>
+  <h1>ICX H100<br>SXM5 Spot</h1>
+  <p>A transparent, repeatable reference rate for deliverable AI compute. SXM5 NVLink providers only. One instrument. One anchor. Built so the market can mature.</p>
   <div class="rate-hero" id="rate">
     <div class="rate-hero-main">
-      <div class="label">ICX H100 US Spot Reference Rate</div>
+      <div class="label">ICX H100 SXM5 US Spot Reference Rate</div>
       <div class="value">$<span id="ref-rate">—</span></div>
       <div class="sub">per GPU-hour · Settlement <span id="settle-date"></span> · <span class="live-dot"></span> Live</div>
     </div>
@@ -331,7 +331,7 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
   <div class="container">
     <div class="section-tag">Market Data</div>
     <div class="section-title">H100 Spot Prices Across Providers</div>
-    <div class="section-sub">Normalized to $/GPU-hour for a single NVIDIA H100 80GB in the US. On-demand rates only. Click any provider for price history.</div>
+    <div class="section-sub">Normalized to $/GPU-hour for a single NVIDIA H100 80GB in the US. On-demand rates only. SXM5 providers contribute to the ICX rate; PCIe variants tracked separately. Click any provider for price history.</div>
     <div class="table-wrap">
       <div class="stale-banner hidden" id="stale-banner">⚠ Price data may be stale — last update was over 2 hours ago. Scrapers may be delayed.</div>
       <div class="table-header">
@@ -391,12 +391,12 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
     <div class="section-title">How ICX Calculates the Rate</div>
     <div class="section-sub">Transparent. Repeatable. Independent of hardware cost models.</div>
     <div class="method-grid">
-      <div class="method-card"><div class="method-num">01</div><h4>Collect</h4><p>Gather executable on-demand H100 hourly pricing from a diversified panel of US-based cloud providers. Multi-GPU clusters normalized to per-GPU equivalent.</p></div>
-      <div class="method-card"><div class="method-num">02</div><h4>Normalize</h4><p>Standard Compute Unit: 1× NVIDIA H100 80GB, US-located, hourly provisionable. Variants flagged and adjusted. All prices in $/GPU-hour.</p></div>
-      <div class="method-card"><div class="method-num">03</div><h4>Clean</h4><p>Trim statistical outliers. Exclude stale quotes and non-executable listings. Apply minimum data thresholds before publication.</p></div>
-      <div class="method-card"><div class="method-num">04</div><h4>Publish</h4><p>Averaged rate published daily at 4:00 PM ET. Consistent timing. Full methodology documentation available. History downloadable.</p></div>
+      <div class="method-card"><div class="method-num">01</div><h4>Collect</h4><p>Gather executable on-demand hourly pricing from a diversified panel of US-based cloud providers. Multi-GPU clusters normalized to per-GPU equivalent. Automated scrapers run hourly; remaining providers updated manually.</p></div>
+      <div class="method-card"><div class="method-num">02</div><h4>Normalize</h4><p>Standard Compute Unit: 1× NVIDIA H100 SXM5 80GB (NVLink), US-located, on-demand, hourly provisionable. PCIe H100 variants are tracked separately and excluded from the primary SXM5 index. All prices in $/GPU-hour.</p></div>
+      <div class="method-card"><div class="method-num">03</div><h4>Clean</h4><p>Remove unavailable providers. Require a minimum panel of 8 available SXM5 providers — rate is not published if the panel is smaller. Trim the bottom and top 15% of remaining prices to remove statistical outliers.</p></div>
+      <div class="method-card"><div class="method-num">04</div><h4>Publish</h4><p>Rate updated hourly from live scrapes. Each computation uses only currently-available providers, so the rate reflects executable spot prices — not stale listings.</p></div>
       <div class="method-card"><div class="method-num">05</div><h4>Price ≠ Cost</h4><p>ICX reflects transaction prices, not hardware ASP or production expense. Commodity benchmarks measure markets, not drilling costs.</p></div>
-      <div class="method-card"><div class="method-num">06</div><h4>Governance</h4><p>Published methodology. Documented update process. Minimum data requirements. The remedy for data risk is governance, not complexity.</p></div>
+      <div class="method-card"><div class="method-num">06</div><h4>Governance</h4><p>Published methodology. Documented update process. Minimum data requirements enforced in code. Variant separation documented and applied consistently. The remedy for data risk is governance, not complexity.</p></div>
     </div>
   </div>
 </section>
