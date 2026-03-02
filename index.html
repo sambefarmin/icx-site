@@ -173,6 +173,8 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
   .gate-input,.gate-btn{width:280px}
 }
 </style>
+<!-- Supabase client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
@@ -215,21 +217,21 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
   <div class="rate-hero" id="rate">
     <div class="rate-hero-main">
       <div class="label">ICX H100 US Spot Reference Rate</div>
-      <div class="value">$<span id="ref-rate">2.68</span></div>
+      <div class="value">$<span id="ref-rate">—</span></div>
       <div class="sub">per GPU-hour · Settlement <span id="settle-date"></span> · <span class="live-dot"></span> Live</div>
     </div>
     <div class="rate-hero-side">
       <div class="stat">
         <div class="label">24h Change</div>
-        <div class="val down" id="daily-chg">-$0.04 (−1.5%)</div>
+        <div class="val neutral" id="daily-chg">—</div>
       </div>
       <div class="stat">
         <div class="label">7d Range</div>
-        <div class="val neutral" id="week-range">$2.52 – $2.89</div>
+        <div class="val neutral" id="week-range">—</div>
       </div>
       <div class="stat">
         <div class="label">Providers Sampled</div>
-        <div class="val" id="prov-count">14</div>
+        <div class="val" id="prov-count">—</div>
       </div>
     </div>
   </div>
@@ -262,10 +264,10 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
       </div>
     </div>
     <div class="stats-row">
-      <div class="stat-card"><div class="num up" id="stat-icx">$2.68</div><div class="lbl">ICX Spot Rate</div></div>
-      <div class="stat-card"><div class="num">$4.82</div><div class="lbl">Hyperscaler Avg</div></div>
-      <div class="stat-card"><div class="num">$2.14</div><div class="lbl">Specialist Low</div></div>
-      <div class="stat-card"><div class="num">2.6×</div><div class="lbl">Price Dispersion</div></div>
+      <div class="stat-card"><div class="num up" id="stat-icx">—</div><div class="lbl">ICX Spot Rate</div></div>
+      <div class="stat-card"><div class="num" id="stat-hyper-avg">—</div><div class="lbl">Hyperscaler Avg</div></div>
+      <div class="stat-card"><div class="num" id="stat-spec-low">—</div><div class="lbl">Specialist Low</div></div>
+      <div class="stat-card"><div class="num" id="stat-dispersion">—</div><div class="lbl">Price Dispersion</div></div>
     </div>
   </div>
 </section>
@@ -337,83 +339,190 @@ pwInput.addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
 
 // ========== SITE INIT (only after auth) ==========
 function initSite(){
-const providers = [
-  {name:"AWS (p5)",tier:"Hyperscaler",tierCls:"tier-hyper",price:8.22,config:"SXM5 80GB",avail:true},
-  {name:"Google Cloud (a3)",tier:"Hyperscaler",tierCls:"tier-hyper",price:3.76,config:"SXM5 80GB",avail:true},
-  {name:"Azure (NC H100)",tier:"Hyperscaler",tierCls:"tier-hyper",price:6.98,config:"SXM5 80GB",avail:true},
-  {name:"Lambda Labs",tier:"Specialist",tierCls:"tier-spec",price:2.49,config:"SXM5 80GB",avail:true},
-  {name:"RunPod (Secure)",tier:"Specialist",tierCls:"tier-spec",price:2.39,config:"SXM5 80GB",avail:true},
-  {name:"Hyperstack",tier:"Specialist",tierCls:"tier-spec",price:2.40,config:"SXM5 80GB",avail:true},
-  {name:"GMI Cloud",tier:"Specialist",tierCls:"tier-spec",price:2.10,config:"SXM5 80GB",avail:true},
-  {name:"CoreWeave",tier:"Specialist",tierCls:"tier-spec",price:2.23,config:"SXM5 80GB",avail:true},
-  {name:"TensorDock",tier:"Specialist",tierCls:"tier-spec",price:2.25,config:"SXM5 80GB",avail:true},
-  {name:"Vast.ai",tier:"Marketplace",tierCls:"tier-mkt",price:1.87,config:"SXM5 80GB",avail:true},
-  {name:"Nebius",tier:"Specialist",tierCls:"tier-spec",price:1.92,config:"SXM5 80GB",avail:true},
-  {name:"Thunder Compute",tier:"Specialist",tierCls:"tier-spec",price:1.50,config:"SXM5 80GB",avail:true},
-  {name:"Jarvislabs",tier:"Specialist",tierCls:"tier-spec",price:2.99,config:"SXM5 80GB",avail:true},
-  {name:"RunPod (Community)",tier:"Marketplace",tierCls:"tier-mkt",price:1.99,config:"PCIe 80GB",avail:true},
-];
 
-function calcICX(p){
-  const s=p.map(x=>x.price).sort((a,b)=>a-b);
-  const t=Math.floor(s.length*.15);
-  const tr=s.slice(t,s.length-t);
-  return tr.reduce((a,b)=>a+b,0)/tr.length;
-}
+// ── Supabase config ──────────────────────────────────────────────
+// Replace these two values with your Supabase project URL and anon key.
+// Find them at: supabase.com → Project Settings → API
+const SUPABASE_URL      = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+// ─────────────────────────────────────────────────────────────────
 
-const icxRate=calcICX(providers);
-document.getElementById('ref-rate').textContent=icxRate.toFixed(2);
-document.getElementById('stat-icx').textContent='$'+icxRate.toFixed(2);
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const now=new Date();
-document.getElementById('settle-date').textContent=now.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+let providers = [];
+let icxRate   = 0;
 
-const tbody=document.querySelector('#provider-table tbody');
+// Set settlement date
+const now = new Date();
+document.getElementById('settle-date').textContent =
+  now.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+
+// ── Table render ─────────────────────────────────────────────────
+const tbody = document.querySelector('#provider-table tbody');
 function renderTable(){
   tbody.innerHTML='';
-  const r=calcICX(providers);
   [...providers].sort((a,b)=>a.price-b.price).forEach(p=>{
-    const d=p.price-r,sign=d>=0?'+':'',cls=d>0?'up':'down',pct=((d/r)*100).toFixed(1);
+    const d=p.price-icxRate,sign=d>=0?'+':'',cls=d>0?'up':'down',pct=((d/icxRate)*100).toFixed(1);
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td class="provider-name">${p.name}</td><td><span class="tier-badge ${p.tierCls}">${p.tier}</span></td><td class="price-val">$${p.price.toFixed(2)}</td><td class="delta ${cls}">${sign}$${Math.abs(d).toFixed(2)} (${sign}${pct}%)</td><td style="color:var(--text2)">${p.config}</td><td><span style="color:var(--green)">● Available</span></td>`;
+    tr.innerHTML=`<td class="provider-name">${p.name}</td><td><span class="tier-badge ${p.tierCls}">${p.tier}</span></td><td class="price-val">$${p.price.toFixed(2)}</td><td class="delta ${cls}">${sign}$${Math.abs(d).toFixed(2)} (${sign}${pct}%)</td><td style="color:var(--text2)">${p.config}</td><td><span style="color:var(--${p.avail?'green':'red'})">● ${p.avail?'Available':'Unavailable'}</span></td>`;
     tbody.appendChild(tr);
   });
 }
-renderTable();
 
-// Ticker
-const tickerEl=document.getElementById('ticker');
-let tHTML='';
-for(let i=0;i<2;i++){providers.forEach(p=>{const d=p.price-icxRate,s=d>=0?'+':'',c=d>=0?'up':'down';tHTML+=`<div class="ticker-item"><span class="name">${p.name}</span> $${p.price.toFixed(2)} <span class="${c}">${s}${((d/icxRate)*100).toFixed(1)}%</span></div>`;});}
-tickerEl.innerHTML=tHTML;
-
-// Chart
-const pts=[];let v=2.85;
-for(let i=0;i<30;i++){v+=(Math.random()-.52)*.12;v=Math.max(2.2,Math.min(3.2,v));pts.push(v);}
-pts[pts.length-1]=icxRate;
-const svg=document.getElementById('chart-svg');
-const W=1100,H=230,minY=1.8,maxY=3.4;
-const sY=v=>H-((v-minY)/(maxY-minY))*H;
-const sX=i=>(i/(pts.length-1))*W;
-let pathD=pts.map((v,i)=>`${i===0?'M':'L'}${sX(i).toFixed(1)},${sY(v).toFixed(1)}`).join(' ');
-const area=document.createElementNS('http://www.w3.org/2000/svg','path');
-area.setAttribute('d',pathD+` L${W},${H} L0,${H} Z`);area.setAttribute('fill','url(#grd)');svg.appendChild(area);
-const line=document.createElementNS('http://www.w3.org/2000/svg','path');
-line.setAttribute('d',pathD);line.setAttribute('fill','none');line.setAttribute('stroke','#4f8cff');line.setAttribute('stroke-width','2.5');svg.appendChild(line);
-const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
-dot.setAttribute('cx',sX(pts.length-1));dot.setAttribute('cy',sY(pts[pts.length-1]));dot.setAttribute('r','5');dot.setAttribute('fill','#4f8cff');dot.setAttribute('stroke','#07080a');dot.setAttribute('stroke-width','2');svg.appendChild(dot);
-const xlEl=document.getElementById('x-labels');
-['30d ago','25d','20d','15d','10d','5d','Today'].forEach(l=>{const s=document.createElement('span');s.textContent=l;xlEl.appendChild(s);});
-
-// Live micro-updates
-setInterval(()=>{
-  providers.forEach(p=>{p.price+=(Math.random()-.5)*.02;p.price=Math.round(Math.max(1.2,p.price)*100)/100;});
-  const r=calcICX(providers);
-  document.getElementById('ref-rate').textContent=r.toFixed(2);
-  document.getElementById('stat-icx').textContent='$'+r.toFixed(2);
-  renderTable();
-},5000);
+// ── Ticker render ────────────────────────────────────────────────
+function renderTicker(){
+  const tickerEl=document.getElementById('ticker');
+  let tHTML='';
+  for(let i=0;i<2;i++){providers.forEach(p=>{const d=p.price-icxRate,s=d>=0?'+':'',c=d>=0?'up':'down';tHTML+=`<div class="ticker-item"><span class="name">${p.name}</span> $${p.price.toFixed(2)} <span class="${c}">${s}${((d/icxRate)*100).toFixed(1)}%</span></div>`;});}
+  tickerEl.innerHTML=tHTML;
 }
+
+// ── Stats row ────────────────────────────────────────────────────
+function renderStats(){
+  document.getElementById('ref-rate').textContent  = icxRate.toFixed(2);
+  document.getElementById('stat-icx').textContent  = '$'+icxRate.toFixed(2);
+  document.getElementById('prov-count').textContent = providers.filter(p=>p.avail).length;
+
+  const hyperPrices = providers.filter(p=>p.tier==='Hyperscaler').map(p=>p.price);
+  const specPrices  = providers.filter(p=>p.tier==='Specialist').map(p=>p.price);
+  const allPrices   = providers.map(p=>p.price);
+
+  if(hyperPrices.length){
+    const avg = hyperPrices.reduce((a,b)=>a+b,0)/hyperPrices.length;
+    document.getElementById('stat-hyper-avg').textContent='$'+avg.toFixed(2);
+  }
+  if(specPrices.length){
+    document.getElementById('stat-spec-low').textContent='$'+Math.min(...specPrices).toFixed(2);
+  }
+  if(allPrices.length>1){
+    const disp = (Math.max(...allPrices)/Math.min(...allPrices)).toFixed(1)+'×';
+    document.getElementById('stat-dispersion').textContent=disp;
+  }
+}
+
+// ── 24h change & 7d range from history ──────────────────────────
+function render24hAnd7d(history){
+  if(!history||history.length<2) return;
+  const latest  = history[history.length-1];
+  const dayAgo  = history.length>=24 ? history[history.length-24] : history[0];
+  const diff    = latest - dayAgo;
+  const pct     = ((diff/dayAgo)*100).toFixed(1);
+  const sign    = diff>=0?'+':'';
+  const cls     = diff>=0?'up':'down';
+  document.getElementById('daily-chg').className='val '+cls;
+  document.getElementById('daily-chg').textContent=`${sign}$${Math.abs(diff).toFixed(2)} (${sign}${pct}%)`;
+
+  const wkPrices = history.slice(-168); // last 7 days of hourly points
+  const lo = Math.min(...wkPrices).toFixed(2);
+  const hi = Math.max(...wkPrices).toFixed(2);
+  document.getElementById('week-range').textContent=`$${lo} – $${hi}`;
+}
+
+// ── Chart ────────────────────────────────────────────────────────
+function drawChart(pts){
+  const svg=document.getElementById('chart-svg');
+  // Remove any previously drawn paths/circles (keep <defs>)
+  Array.from(svg.children).forEach(c=>{ if(c.tagName!=='defs') svg.removeChild(c); });
+  if(!pts||pts.length<2) return;
+
+  const W=1100,H=230,minY=1.8,maxY=3.4;
+  const sY=v=>H-((v-minY)/(maxY-minY))*H;
+  const sX=i=>(i/(pts.length-1))*W;
+  let pathD=pts.map((v,i)=>`${i===0?'M':'L'}${sX(i).toFixed(1)},${sY(v).toFixed(1)}`).join(' ');
+
+  const area=document.createElementNS('http://www.w3.org/2000/svg','path');
+  area.setAttribute('d',pathD+` L${W},${H} L0,${H} Z`);
+  area.setAttribute('fill','url(#grd)');
+  svg.appendChild(area);
+
+  const line=document.createElementNS('http://www.w3.org/2000/svg','path');
+  line.setAttribute('d',pathD);
+  line.setAttribute('fill','none');
+  line.setAttribute('stroke','#4f8cff');
+  line.setAttribute('stroke-width','2.5');
+  svg.appendChild(line);
+
+  const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  dot.setAttribute('cx',sX(pts.length-1));
+  dot.setAttribute('cy',sY(pts[pts.length-1]));
+  dot.setAttribute('r','5');
+  dot.setAttribute('fill','#4f8cff');
+  dot.setAttribute('stroke','#07080a');
+  dot.setAttribute('stroke-width','2');
+  svg.appendChild(dot);
+
+  const xlEl=document.getElementById('x-labels');
+  xlEl.innerHTML='';
+  ['30d ago','25d','20d','15d','10d','5d','Today'].forEach(l=>{
+    const s=document.createElement('span');s.textContent=l;xlEl.appendChild(s);
+  });
+}
+
+// ── Fetch prices from Supabase ───────────────────────────────────
+async function fetchPrices(){
+  const {data,error}=await db
+    .from('latest_prices')
+    .select('name,tier,tier_class,config,price_usd,is_available');
+  if(error){console.error('[ICX] prices error:',error.message);return;}
+  if(!data||data.length===0) return;
+
+  providers=data.map(r=>({
+    name:  r.name,
+    tier:  r.tier,
+    tierCls: r.tier_class,
+    config:  r.config,
+    price:   parseFloat(r.price_usd),
+    avail:   r.is_available,
+  }));
+
+  // Get latest ICX rate from history table
+  const {data:icxRows}=await db
+    .from('icx_rate_history')
+    .select('rate')
+    .order('computed_at',{ascending:false})
+    .limit(1);
+
+  if(icxRows&&icxRows.length){
+    icxRate=parseFloat(icxRows[0].rate);
+  } else {
+    // Fallback: compute locally from current prices
+    const s=[...providers].map(p=>p.price).sort((a,b)=>a-b);
+    const t=Math.floor(s.length*.15);
+    const tr=s.slice(t,s.length-t);
+    icxRate=tr.length ? tr.reduce((a,b)=>a+b,0)/tr.length : 0;
+  }
+
+  renderTable();
+  renderTicker();
+  renderStats();
+}
+
+// ── Fetch 30-day history from Supabase ───────────────────────────
+async function fetchHistory(){
+  const since=new Date(Date.now()-30*24*60*60*1000).toISOString();
+  const {data,error}=await db
+    .from('icx_rate_history')
+    .select('rate,computed_at')
+    .gte('computed_at',since)
+    .order('computed_at',{ascending:true});
+
+  if(error){console.error('[ICX] history error:',error.message);return;}
+  if(!data||data.length<2) return;
+
+  const rates=data.map(r=>parseFloat(r.rate));
+  drawChart(rates);
+  render24hAnd7d(rates);
+}
+
+// ── Boot ─────────────────────────────────────────────────────────
+fetchPrices();
+fetchHistory();
+
+// Refresh every 5 minutes
+setInterval(()=>{ fetchPrices(); fetchHistory(); }, 5*60*1000);
+
+} // end initSite
 </script>
 </body>
 </html>
