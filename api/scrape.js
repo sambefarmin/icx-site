@@ -1,7 +1,7 @@
 /**
  * /api/scrape  – Vercel Cron Function
  * Runs every hour (configured in vercel.json).
- * Fetches prices from all automated scrapers, stores snapshots,
+ * Fetches prices from all automated scrapers in PARALLEL, stores snapshots,
  * and records the new ICX rate.
  *
  * Also callable manually:
@@ -18,10 +18,9 @@ import { supabase }    from '../lib/supabase.js';
 import { SCRAPERS }    from '../lib/scrapers.js';
 import { calcICXRate } from '../lib/icx.js';
 
-export const config = { maxDuration: 60 }; // allow up to 60s for all HTTP calls
+export const config = { maxDuration: 60 };
 
 export default async function handler(req, res) {
-  // Guard: only Vercel cron calls or requests with the secret token
   const secret      = process.env.CRON_SECRET;
   const authHeader  = req.headers['authorization'] ?? '';
   const querySecret = req.query.secret ?? '';
@@ -31,8 +30,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Load all active providers — select(*) so we don't fail if gpu_variant
-    //    column doesn't exist yet (pending migration runs gracefully)
+    // 1. Load all active providers
     const { data: providers, error: provErr } = await supabase
       .from('providers')
       .select('*')
@@ -40,47 +38,57 @@ export default async function handler(req, res) {
 
     if (provErr) throw provErr;
 
-    const results = { scraped: [], skipped: [], errors: [] };
+    // 2. Split into scraped vs skipped
+    const toScrape = providers.filter(p => SCRAPERS[p.name]);
+    const skipped  = providers.filter(p => !SCRAPERS[p.name]).map(p => p.name);
 
-    // 2. For each provider that has an automated scraper, fetch its price
-    for (const provider of providers) {
-      const scraperFn = SCRAPERS[provider.name];
-      if (!scraperFn) {
-        results.skipped.push(provider.name);
+    // 3. Run ALL scrapers in parallel — each has its own 10s internal timeout.
+    //    Total wall-clock time ≈ slowest individual scraper, not sum of all.
+    const jobs = toScrape.map(provider =>
+      SCRAPERS[provider.name]()
+        .then(scraped => ({ provider, scraped, err: null }))
+        .catch(err    => ({ provider, scraped: null, err: err.message }))
+    );
+    const settled = await Promise.allSettled(jobs);
+
+    const results = { scraped: [], skipped, errors: [] };
+
+    // 4. Collect results and batch-insert snapshots
+    const inserts = [];
+    for (const outcome of settled) {
+      if (outcome.status === 'rejected') continue; // shouldn't happen — scrapers catch internally
+      const { provider, scraped, err } = outcome.value;
+
+      if (err || !scraped) {
+        results.errors.push({ provider: provider.name, reason: err ?? 'Scraper returned null' });
         continue;
       }
 
-      const scraped = await scraperFn();
-      if (!scraped) {
-        results.errors.push({ provider: provider.name, reason: 'Scraper returned null' });
-        continue;
-      }
-
-      // Tag snapshot with correct gpu_type based on provider variant
       const gpuType = provider.gpu_variant === 'PCIe'
         ? 'H100 PCIe 80GB'
         : 'H100 SXM5 80GB';
 
-      const { error: insertErr } = await supabase
-        .from('price_snapshots')
-        .insert({
-          provider_id:  provider.id,
-          price_usd:    scraped.price,
-          is_available: scraped.isAvailable,
-          gpu_type:     gpuType,
-          raw_data:     scraped.rawData ?? null,
-        });
+      inserts.push({
+        provider_id:  provider.id,
+        price_usd:    scraped.price,
+        is_available: scraped.isAvailable,
+        gpu_type:     gpuType,
+        raw_data:     scraped.rawData ?? null,
+      });
+      results.scraped.push({ provider: provider.name, price: scraped.price, gpuType });
+    }
 
+    // Batch insert all successful snapshots in one Supabase call
+    if (inserts.length > 0) {
+      const { error: insertErr } = await supabase.from('price_snapshots').insert(inserts);
       if (insertErr) {
-        results.errors.push({ provider: provider.name, reason: insertErr.message });
-      } else {
-        results.scraped.push({ provider: provider.name, price: scraped.price, gpuType });
+        console.error('[/api/scrape] Batch insert error:', insertErr.message);
+        // Move successful scrapes to errors so caller knows
+        results.errors.push({ provider: 'batch-insert', reason: insertErr.message });
       }
     }
 
-    // 3. Fetch latest prices — filter to SXM5 + available only for ICX H100 SXM5 rate.
-    //    Accept both 'H100 SXM5 80GB' and legacy 'H100 80GB' so rate works before
-    //    and after the gpu_type normalization migration runs.
+    // 5. Compute ICX rate from latest prices
     const { data: latestPrices, error: lpErr } = await supabase
       .from('latest_prices')
       .select('*');
@@ -90,14 +98,12 @@ export default async function handler(req, res) {
     const sxm5Prices = latestPrices
       .filter(r => {
         if (!r.is_available) return false;
-        // Include if tagged as SXM5, legacy 'H100 80GB', or gpu_variant is not PCIe
         if (r.gpu_type === 'H100 PCIe 80GB') return false;
         if (r.gpu_variant === 'PCIe') return false;
         return true;
       })
       .map(r => parseFloat(r.price_usd));
 
-    // calcICXRate returns null if panel < 8 (minimum requirement)
     const icx = calcICXRate(sxm5Prices);
 
     if (icx) {
@@ -110,11 +116,11 @@ export default async function handler(req, res) {
     }
 
     return res.status(200).json({
-      ok:           true,
-      icxRate:      icx?.rate ?? null,
-      panelSize:    sxm5Prices.length,
-      panelMet:     icx !== null,
-      timestamp:    new Date().toISOString(),
+      ok:        true,
+      icxRate:   icx?.rate ?? null,
+      panelSize: sxm5Prices.length,
+      panelMet:  icx !== null,
+      timestamp: new Date().toISOString(),
       results,
     });
 
