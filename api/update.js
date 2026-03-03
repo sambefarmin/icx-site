@@ -77,7 +77,7 @@ export default async function handler(req, res) {
     // and after the gpu_type normalization migration runs.
     const { data: latestPrices, error: lpErr } = await supabase
       .from('latest_prices')
-      .select('price_usd, is_available, gpu_type, gpu_variant');
+      .select('*');
 
     if (lpErr) throw lpErr;
 
