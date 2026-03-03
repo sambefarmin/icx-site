@@ -173,6 +173,7 @@ tbody tr:hover .row-arrow{color:var(--accent)}
 .freshness.f-fresh{color:var(--green)}.freshness.f-fresh .fresh-dot{background:var(--green)}
 .freshness.f-aging{color:var(--orange)}.freshness.f-aging .fresh-dot{background:var(--orange)}
 .freshness.f-stale{color:var(--red)}.freshness.f-stale .fresh-dot{background:var(--red)}
+.freshness.f-listed{color:var(--text3)}.freshness.f-listed .fresh-dot{background:var(--text3);opacity:0.5}
 
 /* ========== STALE DATA BANNER ========== */
 .stale-banner{background:rgba(255,92,114,.07);border-bottom:1px solid rgba(255,92,114,.18);padding:10px 28px;font-size:12px;color:var(--red);display:flex;align-items:center;gap:8px;letter-spacing:.2px}
@@ -358,7 +359,7 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
             <th class="sortable" data-col="tier">Tier <i class="sort-icon"></i></th>
             <th class="sortable sort-asc" data-col="price">$/GPU-hr <i class="sort-icon"></i></th>
             <th class="sortable" data-col="delta">Δ vs ICX <i class="sort-icon"></i></th>
-            <th>Updated</th>
+            <th>Price Data</th>
             <th>Status</th>
             <th></th>
           </tr>
@@ -507,8 +508,17 @@ let providers = [];
 let icxRate   = 0;
 
 // ── Freshness helper ──────────────────────────────────────────────
-function freshnessInfo(scrapedAt){
+// sourceType: 'api' = auto-scraped (show live freshness)
+//             'manual' = hand-maintained (show "Listed · date")
+function freshnessInfo(scrapedAt, sourceType){
   if(!scrapedAt) return {cls:'f-stale', label:'—'};
+  // Manually-maintained providers: show "Listed · Mon D" — not a staleness issue
+  if(sourceType === 'manual'){
+    const d   = new Date(scrapedAt);
+    const lbl = d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    return {cls:'f-listed', label:`Listed · ${lbl}`};
+  }
+  // Auto-scraped providers: show live freshness with coloured dot
   const mins = (Date.now() - new Date(scrapedAt)) / 60000;
   if(mins < 60)   return {cls:'f-fresh', label: mins < 2 ? 'just now' : `${Math.round(mins)}m ago`};
   if(mins < 1440) return {cls:'f-aging', label:`${Math.round(mins/60)}h ago`};
@@ -597,7 +607,7 @@ function renderTable(){
     const sign = d >= 0 ? '+' : '';
     const cls  = d > 0 ? 'up' : 'down';
     const pct  = icxRate ? ((d/icxRate)*100).toFixed(1) : '0.0';
-    const fr   = freshnessInfo(p.scrapedAt);
+    const fr   = freshnessInfo(p.scrapedAt, p.sourceType);
     const nameCell = p.website
       ? `<a href="${p.website}" target="_blank" rel="noopener noreferrer" class="provider-link" onclick="event.stopPropagation()">${p.name}</a>`
       : p.name;
@@ -870,13 +880,17 @@ async function fetchPrices(){
     tierCls:    r.tier_class,
     config:     r.config,
     website:    r.website||'',
+    sourceType: r.source_type||'manual',
     price:      parseFloat(r.price_usd),
     avail:      r.is_available,
     scrapedAt:  r.scraped_at,
   }));
 
-  // Stale data banner — show if most recent snapshot is > 2 hours old
-  const freshest = providers.reduce((best,p)=>{
+  // Stale data banner — only consider auto-scraped (api) providers for staleness.
+  // Manually-maintained providers don't have live scrapers so their timestamps
+  // are not meaningful for this check.
+  const apiProviders = providers.filter(p => p.sourceType === 'api');
+  const freshest = apiProviders.reduce((best,p)=>{
     if(!p.scrapedAt) return best;
     return (!best || new Date(p.scrapedAt) > new Date(best)) ? p.scrapedAt : best;
   }, null);
