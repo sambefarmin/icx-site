@@ -41,10 +41,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Look up provider — include gpu_variant for correct tagging
+    // Look up provider — select(*) so we don't fail if gpu_variant column
+    // doesn't exist yet (pending migration runs gracefully)
     const { data: prov, error: provErr } = await supabase
       .from('providers')
-      .select('id, name, gpu_variant')
+      .select('*')
       .eq('name', providerName)
       .eq('is_active', true)
       .single();
@@ -71,15 +72,22 @@ export default async function handler(req, res) {
 
     if (insertErr) throw insertErr;
 
-    // Recompute ICX H100 SXM5 rate — SXM5 + available only
+    // Recompute ICX H100 SXM5 rate — SXM5 + available only.
+    // Accept both 'H100 SXM5 80GB' and legacy 'H100 80GB' so rate works before
+    // and after the gpu_type normalization migration runs.
     const { data: latestPrices, error: lpErr } = await supabase
       .from('latest_prices')
-      .select('price_usd, is_available, gpu_type');
+      .select('price_usd, is_available, gpu_type, gpu_variant');
 
     if (lpErr) throw lpErr;
 
     const sxm5Prices = latestPrices
-      .filter(r => r.is_available && r.gpu_type === 'H100 SXM5 80GB')
+      .filter(r => {
+        if (!r.is_available) return false;
+        if (r.gpu_type === 'H100 PCIe 80GB') return false;
+        if (r.gpu_variant === 'PCIe') return false;
+        return true;
+      })
       .map(r => parseFloat(r.price_usd));
 
     // Returns null if panel < 8
