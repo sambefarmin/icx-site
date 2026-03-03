@@ -57,12 +57,12 @@ nav{position:sticky;top:0;z-index:100;background:rgba(7,8,10,.92);backdrop-filte
 
 /* ========== TICKER ========== */
 .ticker-bar{background:var(--bg2);border-bottom:1px solid var(--border);overflow:hidden;height:32px;display:flex;align-items:center}
-.ticker-content{display:flex;animation:scroll-left 60s linear infinite;white-space:nowrap}
-.ticker-item{display:inline-flex;align-items:center;gap:6px;padding:0 20px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text2)}
+.ticker-content{display:flex;animation:scroll-left 60s linear infinite;white-space:nowrap;will-change:transform;transform:translateZ(0);backface-visibility:hidden}
+.ticker-item{display:inline-flex;align-items:center;gap:6px;padding:0 20px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text2);-webkit-font-smoothing:antialiased}
 .ticker-item .name{color:var(--text3)}
 .ticker-item .up{color:var(--green)}
 .ticker-item .down{color:var(--red)}
-@keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes scroll-left{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(-50%,0,0)}}
 
 /* ========== HERO ========== */
 .hero{padding:80px 24px 60px;text-align:center;position:relative;overflow:hidden}
