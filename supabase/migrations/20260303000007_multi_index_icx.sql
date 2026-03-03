@@ -20,7 +20,9 @@ ALTER TABLE price_snapshots
 
 -- Recreate latest_prices view to expose gpu_type and pricing_model
 -- (Combines all prior migrations 003 + 004 + 005 + 006)
-CREATE OR REPLACE VIEW latest_prices AS
+-- Must DROP first — CREATE OR REPLACE fails when column order changes
+DROP VIEW IF EXISTS latest_prices;
+CREATE VIEW latest_prices AS
 SELECT DISTINCT ON (ps.provider_id)
   ps.id,
   ps.provider_id,

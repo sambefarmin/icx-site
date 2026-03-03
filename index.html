@@ -268,7 +268,7 @@ footer{border-top:1px solid var(--border);padding:24px;text-align:center;font-si
 .modal-delta-badge.up{background:rgba(45,212,160,.12);color:var(--green);border:1px solid rgba(45,212,160,.25)}
 .modal-delta-badge.down{background:rgba(255,92,114,.12);color:var(--red);border:1px solid rgba(255,92,114,.25)}
 .modal-config{font-size:12px;color:var(--text3)}
-.modal-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px}
+.modal-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px}
 .modal-stat{background:var(--bg3);padding:14px 12px}
 .modal-stat .sv{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;margin-bottom:4px}
 .modal-stat .sl{font-size:10px;color:var(--text3);letter-spacing:.04em;text-transform:uppercase}
@@ -428,13 +428,12 @@ footer{border-top:1px solid var(--border);padding:24px;text-align:center;font-si
     </div>
   </div>
 
-  <div class="scroll-cue"><span>Market Data</span><div class="scroll-arrow"></div></div>
+
 </section>
 
 <!-- ========== PROVIDER TABLE ========== -->
 <section id="providers">
   <div class="container">
-    <div class="section-tag">Market Data</div>
     <div class="section-title" id="market-section-title">GPU Spot Prices Across Providers</div>
     <div class="section-sub">Normalized to $/GPU-hour. On-demand rates unless tagged Spot. Click any row for price history and provider detail.</div>
 
@@ -571,7 +570,6 @@ footer{border-top:1px solid var(--border);padding:24px;text-align:center;font-si
       <div class="modal-stat"><div class="sv" id="ms-high">—</div><div class="sl">Period High</div></div>
       <div class="modal-stat"><div class="sv" id="ms-low">—</div><div class="sl">Period Low</div></div>
       <div class="modal-stat"><div class="sv" id="ms-avg">—</div><div class="sl">Period Avg</div></div>
-      <div class="modal-stat"><div class="sv" id="ms-pts">—</div><div class="sl">Data Points</div></div>
     </div>
     <div class="modal-chart-section">
       <div class="range-tabs" id="range-tabs">
@@ -968,7 +966,7 @@ document.querySelectorAll('.range-tab').forEach(tab => {
     if(modalCurrentProvider){
       const inner = document.getElementById('modal-chart-inner');
       inner.innerHTML = '<div class="modal-chart-loading"><div class="spinner"></div> Loading…</div>';
-      ['ms-high','ms-low','ms-avg','ms-pts'].forEach(id=>{document.getElementById(id).textContent='—';});
+      ['ms-high','ms-low','ms-avg'].forEach(id=>{document.getElementById(id).textContent='—';});
       fetchProviderHistory(modalCurrentProvider.providerId, modalCurrentProvider.price);
     }
   });
@@ -991,7 +989,7 @@ function openModal(p){
   db.textContent = `${sign}$${Math.abs(d).toFixed(2)} vs ICX (${sign}${pct}%)`;
   db.className   = 'modal-delta-badge '+(d>=0?'down':'up');
 
-  ['ms-high','ms-low','ms-avg','ms-pts'].forEach(id=>{document.getElementById(id).textContent='—';});
+  ['ms-high','ms-low','ms-avg'].forEach(id=>{document.getElementById(id).textContent='—';});
   document.getElementById('modal-updated').textContent = p.scrapedAt
     ? 'Last updated: '+new Date(p.scrapedAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})
     : '';
@@ -1045,7 +1043,6 @@ async function fetchProviderHistory(providerId, currentPrice){
     document.getElementById('ms-high').textContent='$'+hi.toFixed(2);
     document.getElementById('ms-low').textContent ='$'+lo.toFixed(2);
     document.getElementById('ms-avg').textContent ='$'+avg.toFixed(2);
-    document.getElementById('ms-pts').textContent =(data||[]).length;
     drawModalChart(pts, inner);
   } catch(err){
     inner.innerHTML = `<div class="modal-no-data">Could not load history — ${err.message}</div>`;
