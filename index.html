@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ICX – The Reference Rate for AI Compute</title>
+<title>ICX – AI Compute Reference Rates</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -27,244 +27,285 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;opacity:.03;ba
 /* ========== PASSWORD GATE ========== */
 #gate{position:fixed;inset:0;z-index:10000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
 #gate.hidden{opacity:0;visibility:hidden;pointer-events:none}
-#gate::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(79,140,255,.06) 0%,transparent 70%);pointer-events:none}
-.gate-logo{font-size:36px;font-weight:900;letter-spacing:4px;color:var(--accent);margin-bottom:8px}
-.gate-logo span{color:var(--text3)}
-.gate-sub{font-size:13px;color:var(--text3);letter-spacing:1px;margin-bottom:48px}
-.gate-box{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:16px}
-.gate-input-wrap{position:relative}
-.gate-input{width:320px;padding:14px 20px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.gate-logo{font-family:'JetBrains Mono',monospace;font-size:40px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+.gate-logo span{color:var(--accent)}
+.gate-sub{color:var(--text3);font-size:14px;margin-bottom:40px;letter-spacing:.04em;text-transform:uppercase}
+.gate-box{display:flex;flex-direction:column;align-items:center;gap:12px;width:320px}
+.gate-input-wrap{width:100%;position:relative}
+.gate-input{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:14px 16px;border-radius:8px;font-size:15px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
 .gate-input:focus{border-color:var(--accent)}
-.gate-input::placeholder{color:var(--text3)}
-.gate-input.error{border-color:var(--red);animation:shake .4s}
-@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
-.gate-btn{width:320px;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .2s}
-.gate-btn:hover{background:var(--accent2);transform:translateY(-1px)}
-.gate-error-msg{font-size:12px;color:var(--red);height:16px;transition:opacity .2s}
-.gate-hint{font-size:11px;color:var(--text3);margin-top:24px;letter-spacing:.5px}
+.gate-input.error{border-color:var(--red);animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.gate-btn{width:100%;background:var(--accent);color:#fff;border:none;padding:14px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s}
+.gate-btn:hover{background:var(--accent2)}
+.gate-error-msg{color:var(--red);font-size:13px;min-height:18px}
+.gate-hint{color:var(--text3);font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-top:8px}
 
-/* ========== MAIN SITE ========== */
+/* ========== SITE WRAP ========== */
 #site{display:none}
 #site.visible{display:block}
 
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,8,10,.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(30,35,48,.5)}
-.logo{font-size:22px;font-weight:800;letter-spacing:2px;color:var(--accent)}
-.logo span{color:var(--text3)}
-.nav-links{display:flex;gap:32px;align-items:center}
-.nav-links a{color:var(--text2);text-decoration:none;font-size:13px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .2s}
-.nav-links a:hover{color:var(--text)}
-.nav-cta{padding:8px 20px;background:var(--accent);color:#fff;border-radius:6px;font-weight:600;font-size:12px;letter-spacing:.5px;text-transform:uppercase;text-decoration:none;transition:all .2s}
-.nav-cta:hover{background:var(--accent2);transform:translateY(-1px)}
+/* ========== NAV ========== */
+nav{position:sticky;top:0;z-index:100;background:rgba(7,8,10,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:-.01em}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:6px;transition:all .15s;font-weight:500}
+.nav-links a:hover{color:var(--text);background:var(--bg3)}
+.nav-links .nav-cta{background:var(--accent);color:#fff;margin-left:8px}
+.nav-links .nav-cta:hover{background:var(--accent2)}
 
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:120px 40px 80px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(79,140,255,.08) 0%,transparent 70%);pointer-events:none}
-.hero-tag{font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:24px;display:flex;align-items:center;gap:8px}
-.hero-tag::before,.hero-tag::after{content:'';width:24px;height:1px;background:var(--accent);opacity:.5}
-.hero h1{font-size:clamp(48px,7vw,88px);font-weight:900;line-height:1;letter-spacing:-3px;margin-bottom:24px;background:linear-gradient(180deg,#fff 30%,var(--text2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero p{font-size:18px;color:var(--text2);max-width:600px;line-height:1.7;margin-bottom:48px}
+/* ========== TICKER ========== */
+.ticker-bar{background:var(--bg2);border-bottom:1px solid var(--border);overflow:hidden;height:32px;display:flex;align-items:center}
+.ticker-content{display:flex;animation:scroll-left 60s linear infinite;white-space:nowrap}
+.ticker-item{display:inline-flex;align-items:center;gap:6px;padding:0 20px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text2)}
+.ticker-item .name{color:var(--text3)}
+.ticker-item .up{color:var(--green)}
+.ticker-item .down{color:var(--red)}
+@keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-.rate-hero{display:flex;gap:2px;margin-bottom:48px;border-radius:12px;overflow:hidden}
-.rate-hero-main{background:var(--bg3);padding:40px 48px;display:flex;flex-direction:column;gap:6px;min-width:320px}
-.rate-hero-main .label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3)}
-.rate-hero-main .value{font-family:'JetBrains Mono',monospace;font-size:56px;font-weight:600;color:#fff}
-.rate-hero-main .value span{color:var(--green)}
-.rate-hero-main .sub{font-size:13px;color:var(--text2)}
-.rate-hero-side{display:flex;flex-direction:column;gap:2px}
-.rate-hero-side .stat{background:var(--bg3);padding:20px 32px;flex:1;display:flex;flex-direction:column;justify-content:center}
-.rate-hero-side .stat .label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
-.rate-hero-side .stat .val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600}
-.up{color:var(--green)}.down{color:var(--red)}.neutral{color:var(--text2)}
+/* ========== HERO ========== */
+.hero{padding:80px 24px 60px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:800px;height:600px;background:radial-gradient(ellipse at center,rgba(79,140,255,.08) 0%,transparent 70%);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(79,140,255,.1);border:1px solid rgba(79,140,255,.25);color:var(--accent);padding:5px 14px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:28px}
+.hero h1{font-size:clamp(36px,6vw,64px);font-weight:800;line-height:1.08;letter-spacing:-.03em;margin-bottom:20px}
+.hero p{color:var(--text2);font-size:16px;line-height:1.65;max-width:560px;margin:0 auto 48px}
 
-.scroll-cue{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase;animation:bounce 2s infinite}
-@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
-.scroll-arrow{width:20px;height:20px;border-right:2px solid var(--text3);border-bottom:2px solid var(--text3);transform:rotate(45deg)}
+/* ========== INDEX CARDS ========== */
+.index-cards{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:0 auto 48px;max-width:1100px;padding:0 24px}
+.index-card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:22px 24px;cursor:pointer;transition:all .25s;min-width:185px;flex:1;max-width:220px;text-align:left;position:relative;overflow:hidden}
+.index-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(79,140,255,.04) 0%,transparent 60%);pointer-events:none}
+.index-card:hover:not(.coming){border-color:var(--border2);background:var(--bg4);transform:translateY(-1px)}
+.index-card.active{border-color:var(--accent);background:rgba(79,140,255,.06);box-shadow:0 0 28px rgba(79,140,255,.14),0 0 0 1px rgba(79,140,255,.15)}
+.index-card.active::before{background:linear-gradient(135deg,rgba(79,140,255,.1) 0%,transparent 60%)}
+.index-card.coming{opacity:.4;cursor:default}
+.ic-label{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--accent);letter-spacing:.05em;margin-bottom:3px}
+.index-card.active .ic-label{color:var(--accent)}
+.ic-sublabel{font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.3}
+.ic-rate{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:var(--text);margin-bottom:12px;line-height:1}
+.ic-soon{color:var(--text3);font-size:18px}
+.ic-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ic-live{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--text2);letter-spacing:.03em;text-transform:uppercase;font-weight:500}
+.ic-chg{font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:600}
+.ic-chg.up{color:var(--green)}
+.ic-chg.down{color:var(--red)}
+.ic-chg.neutral{color:var(--text3)}
+.ic-badge-soon{font-size:10px;padding:3px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;font-weight:500}
 
-section{padding:100px 40px}
-.container{max-width:1200px;margin:0 auto}
-.section-tag{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
-.section-title{font-size:clamp(32px,4vw,48px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
-.section-sub{font-size:16px;color:var(--text2);max-width:560px;line-height:1.7;margin-bottom:48px}
+/* ========== ACTIVE INDEX PANEL (stats beneath cards) ========== */
+.active-panel{background:var(--bg2);border:1px solid var(--border);border-radius:14px;display:flex;align-items:center;justify-content:space-between;padding:24px 32px;max-width:900px;margin:0 auto;gap:24px;flex-wrap:wrap}
+.ap-main{flex:none}
+.ap-rate-label{font-size:11px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.ap-rate-value{font-family:'JetBrains Mono',monospace;font-size:40px;font-weight:700;line-height:1}
+.ap-rate-sub{font-size:12px;color:var(--text3);margin-top:6px;display:flex;align-items:center;gap:8px}
+.ap-stats{display:flex;gap:32px;flex:1;justify-content:flex-end;flex-wrap:wrap}
+.ap-stat{text-align:right}
+.ap-stat .val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--text);margin-bottom:4px}
+.ap-stat .val.up{color:var(--green)}
+.ap-stat .val.down{color:var(--red)}
+.ap-stat .val.neutral{color:var(--text2)}
+.ap-stat .lbl{font-size:11px;color:var(--text3);letter-spacing:.03em}
+.scroll-cue{margin-top:40px;display:flex;flex-direction:column;align-items:center;gap:8px;opacity:.35}
+.scroll-cue span{font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.scroll-arrow{width:1px;height:28px;background:linear-gradient(to bottom,var(--text3),transparent)}
 
-.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.table-header{padding:20px 28px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
-.table-header h3{font-size:15px;font-weight:700}
-.table-header .badge{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:var(--green3);color:var(--green)}
-.pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-table{width:100%;border-collapse:collapse}
-th{text-align:left;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);padding:14px 28px;border-bottom:1px solid var(--border);white-space:nowrap}
-td{padding:16px 28px;font-size:14px;border-bottom:1px solid rgba(30,35,48,.4)}
-tr:last-child td{border-bottom:none}
-.provider-name{font-weight:600}
-.price-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:15px}
-.tier-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase}
-.tier-hyper{background:rgba(255,92,114,.1);color:var(--red)}
-.tier-spec{background:rgba(79,140,255,.1);color:var(--accent)}
-.tier-mkt{background:rgba(255,170,68,.1);color:var(--orange)}
-.delta{font-family:'JetBrains Mono',monospace;font-size:12px}
+/* ========== LIVE DOT ========== */
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
 
-/* ========== FILTER BAR ========== */
-.filter-bar{padding:14px 28px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);flex-wrap:wrap}
-.filter-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-right:2px;white-space:nowrap}
-.filter-pill{padding:4px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.3px;cursor:pointer;transition:all .18s;white-space:nowrap}
-.filter-pill:hover{border-color:var(--accent);color:var(--text)}
-.filter-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.filter-pill.active-hyper{background:rgba(255,92,114,.15);border-color:var(--red);color:var(--red)}
-.filter-pill.active-spec{background:rgba(79,140,255,.15);border-color:var(--accent);color:var(--accent)}
-.filter-pill.active-mkt{background:rgba(255,170,68,.15);border-color:var(--orange);color:var(--orange)}
-.filter-pill.active-avail{background:var(--green3);border-color:var(--green2);color:var(--green)}
-.filter-sep{width:1px;height:18px;background:var(--border);margin:0 6px;flex-shrink:0}
-.filter-search{padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none;width:160px;transition:border-color .2s}
-.filter-search:focus{border-color:var(--accent)}
-.filter-search::placeholder{color:var(--text3)}
-.filter-count{font-size:11px;color:var(--text3);margin-left:auto;white-space:nowrap}
+/* ========== PROVIDERS SECTION ========== */
+#providers{padding:80px 0}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.section-tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.section-title{font-size:clamp(24px,3vw,36px);font-weight:800;letter-spacing:-.02em;margin-bottom:12px}
+.section-sub{color:var(--text2);font-size:14px;line-height:1.65;max-width:700px;margin-bottom:40px}
 
-/* ========== SORTABLE HEADERS ========== */
-th.sortable{cursor:pointer;user-select:none}
-th.sortable:hover{color:var(--text2)}
-th.sortable .sort-icon{display:inline-block;margin-left:4px;opacity:.3;font-style:normal}
-th.sortable.sort-asc .sort-icon,th.sortable.sort-desc .sort-icon{opacity:1;color:var(--accent)}
-th.sortable.sort-asc .sort-icon::after{content:'↑'}
-th.sortable.sort-desc .sort-icon::after{content:'↓'}
-th.sortable:not(.sort-asc):not(.sort-desc) .sort-icon::after{content:'↕'}
+/* GPU type tabs */
+.gpu-tabs{display:flex;gap:6px;margin-bottom:8px}
+.gpu-tab{background:transparent;border:1px solid var(--border);color:var(--text2);padding:7px 16px;border-radius:8px;font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:500;cursor:pointer;transition:all .15s;letter-spacing:.02em}
+.gpu-tab:hover{border-color:var(--border2);color:var(--text);background:var(--bg3)}
+.gpu-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.gpu-tab-label{font-size:11px;color:var(--text3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:10px;font-weight:500}
 
-/* ========== CLICKABLE ROWS ========== */
-tbody tr{cursor:pointer;transition:background .12s}
-tbody tr:hover td{background:rgba(79,140,255,.05)}
-tbody tr.row-selected td{background:rgba(79,140,255,.09)}
-.row-arrow{color:var(--text3);font-size:11px;transition:color .15s}
+/* filter bar */
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.stale-banner{background:rgba(255,170,68,.12);border-bottom:1px solid rgba(255,170,68,.3);color:var(--orange);padding:10px 20px;font-size:13px;display:flex;align-items:center;gap:8px}
+.stale-banner.hidden{display:none}
+.table-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px}
+.table-header h3{font-size:15px;font-weight:700;color:var(--text)}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(45,212,160,.1);border:1px solid rgba(45,212,160,.25);color:var(--green);padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse-dot 2s ease-in-out infinite}
+.filter-bar{display:flex;align-items:center;gap:8px;padding:0 24px 16px;flex-wrap:wrap}
+.filter-label{font-size:11px;color:var(--text3);letter-spacing:.04em;text-transform:uppercase;margin-right:2px;font-weight:500}
+.filter-pill{background:transparent;border:1px solid var(--border);color:var(--text2);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.filter-pill:hover{border-color:var(--border2);color:var(--text)}
+.filter-pill.active,.filter-pill.active-avail{background:var(--bg4);border-color:var(--border2);color:var(--text)}
+.filter-pill.active-hyper{background:rgba(79,140,255,.15);border-color:rgba(79,140,255,.5);color:var(--accent)}
+.filter-pill.active-spec{background:rgba(45,212,160,.12);border-color:rgba(45,212,160,.4);color:var(--green)}
+.filter-pill.active-mkt{background:rgba(255,170,68,.1);border-color:rgba(255,170,68,.35);color:var(--orange)}
+.filter-pill.active-avail{background:rgba(45,212,160,.12);border-color:rgba(45,212,160,.4);color:var(--green)}
+.filter-sep{width:1px;height:20px;background:var(--border);margin:0 4px}
+.filter-search{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:5px 12px;border-radius:20px;font-size:12px;font-family:'Inter',sans-serif;outline:none;width:180px;transition:border-color .2s}
+.filter-search:focus{border-color:var(--border2)}
+.filter-count{font-size:11px;color:var(--text3);margin-left:4px}
+
+/* model badge */
+.model-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap}
+.model-ondemand{background:rgba(79,140,255,.1);color:var(--accent);border:1px solid rgba(79,140,255,.2)}
+.model-spot{background:rgba(255,170,68,.1);color:var(--orange);border:1px solid rgba(255,170,68,.25)}
+
+/* table */
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--bg3);color:var(--text3);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:10px 16px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+thead th:first-child{padding-left:24px}
+thead th:last-child{padding-right:24px}
+tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+tbody tr:hover{background:var(--bg3)}
+tbody tr:last-child{border-bottom:none}
+tbody tr.row-selected{background:rgba(79,140,255,.07)}
+td{padding:13px 16px;vertical-align:middle}
+td:first-child{padding-left:24px}
+td:last-child{padding-right:24px}
+.provider-name{font-weight:600;font-size:13px;white-space:nowrap}
+.provider-link{color:var(--text);text-decoration:none}
+.provider-link:hover{color:var(--accent);text-decoration:underline}
+.price-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600}
+.delta{font-family:'JetBrains Mono',monospace;font-size:12px;white-space:nowrap}
+.delta.up{color:var(--red)}
+.delta.down{color:var(--green)}
+.gpu-type-cell{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.row-arrow{color:var(--text3);font-size:16px;text-align:right;transition:color .15s}
 tbody tr:hover .row-arrow{color:var(--accent)}
 
-/* ========== MODAL ========== */
-.modal-overlay{position:fixed;inset:0;z-index:9000;background:rgba(7,8,10,.8);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s}
-.modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:min(680px,95vw);max-height:88vh;overflow-y:auto;transform:translateY(24px);transition:transform .22s;scrollbar-width:thin}
-.modal-overlay.open .modal{transform:translateY(0)}
-.modal-head{padding:28px 32px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.modal-name{font-size:22px;font-weight:800;letter-spacing:-.5px}
-.modal-close{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s}
-.modal-close:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
-.modal-meta{padding:10px 32px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.modal-price-big{font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:700;line-height:1}
-.modal-badge-wrap{display:flex;gap:8px;align-items:center}
-.modal-delta-badge{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px}
-.modal-delta-badge.up{background:rgba(45,212,160,.12);color:var(--green)}
-.modal-delta-badge.down{background:rgba(255,92,114,.12);color:var(--red)}
-.modal-config{font-size:12px;color:var(--text3);margin-left:4px}
-.modal-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:20px 32px 0}
-.modal-stat{background:var(--bg3);padding:14px 12px;text-align:center;border-radius:4px}
-.modal-stat .sv{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;margin-bottom:3px}
-.modal-stat .sl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
-.modal-chart-section{padding:24px 32px 0}
-.modal-chart-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:12px}
-.modal-chart-inner{position:relative;height:150px}
-.modal-y-labels{position:absolute;left:0;top:0;bottom:0;display:flex;flex-direction:column;justify-content:space-between;padding:2px 0}
-.modal-y-labels span{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3)}
-.modal-chart-loading{display:flex;align-items:center;justify-content:center;height:120px;color:var(--text3);font-size:12px;gap:8px}
-.spinner{width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.modal-foot{padding:16px 32px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;margin-top:20px}
-.modal-foot-info{font-size:11px;color:var(--text3)}
-.modal-no-data{padding:20px 32px;color:var(--text3);font-size:13px;text-align:center}
+/* tier badges */
+.tier-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap}
+.tier-Hyperscaler{background:rgba(79,140,255,.12);color:var(--accent);border:1px solid rgba(79,140,255,.2)}
+.tier-Specialist{background:rgba(45,212,160,.1);color:var(--green);border:1px solid rgba(45,212,160,.2)}
+.tier-Marketplace{background:rgba(255,170,68,.1);color:var(--orange);border:1px solid rgba(255,170,68,.22)}
 
-/* ========== FRESHNESS BADGES ========== */
-.freshness{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap}
-.fresh-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.freshness.f-fresh{color:var(--green)}.freshness.f-fresh .fresh-dot{background:var(--green)}
-.freshness.f-aging{color:var(--orange)}.freshness.f-aging .fresh-dot{background:var(--orange)}
-.freshness.f-stale{color:var(--red)}.freshness.f-stale .fresh-dot{background:var(--red)}
-.freshness.f-listed{color:var(--text3)}.freshness.f-listed .fresh-dot{background:var(--text3);opacity:0.5}
+/* freshness */
+.freshness{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.f-fresh{background:rgba(45,212,160,.1);color:var(--green)}
+.f-fresh .fresh-dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.f-aging{background:rgba(255,170,68,.1);color:var(--orange)}
+.f-aging .fresh-dot{width:5px;height:5px;border-radius:50%;background:var(--orange)}
+.f-stale{background:rgba(255,92,114,.1);color:var(--red)}
+.f-stale .fresh-dot{width:5px;height:5px;border-radius:50%;background:var(--red)}
+.f-listed{background:var(--bg4);color:var(--text3)}
+.f-listed .fresh-dot{width:5px;height:5px;border-radius:50%;background:var(--text3)}
 
-/* ========== STALE DATA BANNER ========== */
-.stale-banner{background:rgba(255,92,114,.07);border-bottom:1px solid rgba(255,92,114,.18);padding:10px 28px;font-size:12px;color:var(--red);display:flex;align-items:center;gap:8px;letter-spacing:.2px}
-.stale-banner.hidden{display:none}
+/* sortable */
+.sortable{cursor:pointer;user-select:none}
+.sort-icon{display:inline-block;width:10px;opacity:.4;font-style:normal}
+.sort-icon::after{content:'↕'}
+.sort-asc .sort-icon{opacity:1}
+.sort-asc .sort-icon::after{content:'↑'}
+.sort-desc .sort-icon{opacity:1}
+.sort-desc .sort-icon::after{content:'↓'}
 
-/* ========== PROVIDER LINK ========== */
-.provider-link{color:inherit;text-decoration:none;border-bottom:1px solid transparent;transition:border-color .18s,color .18s}
-.provider-link:hover{border-bottom-color:var(--accent);color:var(--accent)}
+/* ========== CHART AREA ========== */
+.chart-area{padding:32px 24px 24px;border-top:1px solid var(--border);margin-top:0}
+.chart-area .label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:16px;text-transform:uppercase;letter-spacing:.06em}
+.chart-canvas{position:relative}
+.y-labels{position:absolute;left:0;top:0;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:2px 0}
+.y-labels span{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;width:38px;text-align:right}
+.chart-svg{display:block}
+.x-labels{display:flex;justify-content:space-between;margin-left:40px;margin-top:6px}
+.x-labels span{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace}
 
-/* ========== MODAL RANGE TABS ========== */
-.range-tabs{display:flex;gap:4px;margin-bottom:10px}
-.range-tab{padding:3px 11px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text3);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
-.range-tab:hover{border-color:var(--border2);color:var(--text2)}
-.range-tab.active{background:rgba(79,140,255,.12);border-color:var(--accent);color:var(--accent)}
+/* ========== STATS ROW ========== */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border);margin-top:0}
+.stat-card{background:var(--bg2);padding:20px 24px}
+.stat-card .num{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;margin-bottom:6px;color:var(--text)}
+.stat-card .num.up{color:var(--green)}
+.stat-card .lbl{font-size:11px;color:var(--text3);letter-spacing:.03em;text-transform:uppercase}
 
-/* ========== MODAL VISIT LINK ========== */
-.modal-visit{display:inline-flex;align-items:center;gap:5px;color:var(--accent);font-size:12px;font-weight:600;text-decoration:none;letter-spacing:.2px;transition:color .15s;font-family:'Inter',sans-serif}
-.modal-visit:hover{color:var(--text)}.modal-visit svg{width:11px;height:11px;flex-shrink:0}
+/* ========== METHODOLOGY ========== */
+#methodology{padding:80px 0}
+.method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+.method-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:24px}
+.method-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);font-weight:600;margin-bottom:12px;letter-spacing:.04em}
+.method-card h4{font-size:14px;font-weight:700;margin-bottom:8px}
+.method-card p{font-size:13px;color:var(--text2);line-height:1.65}
 
-.chart-area{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:32px;margin-top:48px;position:relative;height:340px;overflow:hidden}
-.chart-area .label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:20px}
-.chart-canvas{width:100%;height:250px;position:relative}
-.y-labels{position:absolute;left:0;top:0;bottom:0;display:flex;flex-direction:column;justify-content:space-between;padding:4px 0}
-.y-labels span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3)}
-.x-labels{position:absolute;bottom:-20px;left:40px;right:0;display:flex;justify-content:space-between}
-.x-labels span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3)}
-
-.method-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2px}
-.method-card{background:var(--bg3);padding:36px;transition:all .3s}
-.method-card:first-child{border-radius:12px 0 0 0}
-.method-card:nth-child(3){border-radius:0 12px 0 0}
-.method-card:nth-child(4){border-radius:0 0 0 12px}
-.method-card:last-child{border-radius:0 0 12px 0}
-.method-card:hover{background:var(--bg4)}
-.method-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);font-weight:600;margin-bottom:12px}
-.method-card h4{font-size:16px;font-weight:700;margin-bottom:8px}
-.method-card p{font-size:13px;color:var(--text2);line-height:1.6}
-
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:48px;border-radius:12px;overflow:hidden}
-.stat-card{background:var(--bg3);padding:32px;text-align:center}
-.stat-card .num{font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:700;margin-bottom:4px}
-.stat-card .lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
-
-.roadmap{display:flex;gap:2px;border-radius:12px;overflow:hidden;margin-top:48px}
-.roadmap-phase{flex:1;padding:36px;background:var(--bg3);position:relative;transition:all .3s}
-.roadmap-phase:hover{background:var(--bg4)}
-.roadmap-phase.active{background:var(--accent3);border:1px solid rgba(79,140,255,.3)}
-.phase-tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
-.phase-tag.now{color:var(--accent)}
-.phase-tag.next{color:var(--text3)}
-.roadmap-phase h4{font-size:18px;font-weight:700;margin-bottom:8px}
+/* ========== ROADMAP ========== */
+#roadmap{padding:80px 0;border-top:1px solid var(--border)}
+.roadmap{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px;position:relative}
+.roadmap::before{content:'';position:absolute;top:50px;left:calc(25% / 2);right:calc(25% / 2);height:1px;background:linear-gradient(to right,transparent,var(--border2) 20%,var(--border2) 80%,transparent)}
+.roadmap-phase{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:24px;position:relative}
+.roadmap-phase.active{border-color:var(--accent)}
+.phase-tag{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px;display:inline-block;margin-bottom:14px}
+.phase-tag.now{background:rgba(79,140,255,.15);color:var(--accent)}
+.phase-tag.next{background:var(--bg4);color:var(--text3)}
+.roadmap-phase h4{font-size:14px;font-weight:700;margin-bottom:8px}
 .roadmap-phase p{font-size:13px;color:var(--text2);line-height:1.6}
 
-.cta-section{text-align:center;padding:120px 40px;position:relative}
-.cta-section::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(circle,rgba(79,140,255,.06) 0%,transparent 70%);pointer-events:none}
-.cta-section h2{font-size:clamp(36px,5vw,56px);font-weight:900;letter-spacing:-2px;margin-bottom:16px}
-.cta-section p{font-size:16px;color:var(--text2);max-width:480px;margin:0 auto 40px;line-height:1.7}
-.cta-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
-.btn-primary{padding:14px 36px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .2s;text-decoration:none}
-.btn-primary:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 8px 30px rgba(79,140,255,.2)}
-.btn-secondary{padding:14px 36px;background:transparent;color:var(--text);border:1px solid var(--border2);border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none}
-.btn-secondary:hover{border-color:var(--text3);transform:translateY(-2px)}
+/* ========== CTA SECTION ========== */
+.cta-section{padding:100px 24px;text-align:center;background:linear-gradient(135deg,rgba(79,140,255,.06) 0%,transparent 60%);border-top:1px solid var(--border)}
+.cta-section h2{font-size:clamp(24px,4vw,42px);font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-bottom:16px}
+.cta-section p{color:var(--text2);font-size:16px;max-width:520px;margin:0 auto 40px;line-height:1.65}
+.cta-buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:var(--accent);color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;transition:background .2s}
+.btn-primary:hover{background:var(--accent2)}
+.btn-secondary{background:var(--bg3);color:var(--text);padding:14px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;border:1px solid var(--border2);transition:all .2s}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
 
-footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:var(--text3);font-size:12px;letter-spacing:.5px}
+/* ========== FOOTER ========== */
+footer{border-top:1px solid var(--border);padding:24px;text-align:center;font-size:12px;color:var(--text3)}
 
-.ticker-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 0;overflow:hidden;white-space:nowrap}
-.ticker-content{display:flex;gap:48px;animation:tickscroll 30s linear infinite;width:max-content}
-.ticker-item{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px}
-.ticker-item .name{color:var(--text3);font-weight:600}
-@keyframes tickscroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+/* ========== MODAL ========== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+.modal-overlay.open{opacity:1;visibility:visible}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:660px;max-height:88vh;overflow-y:auto;padding:32px}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.modal-name{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.modal-close{background:var(--bg4);border:1px solid var(--border);color:var(--text2);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;transition:all .15s;flex-shrink:0}
+.modal-close:hover{background:var(--bg3);color:var(--text)}
+.modal-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.modal-price-big{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700}
+.modal-badge-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.modal-delta-badge{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.modal-delta-badge.up{background:rgba(45,212,160,.12);color:var(--green);border:1px solid rgba(45,212,160,.25)}
+.modal-delta-badge.down{background:rgba(255,92,114,.12);color:var(--red);border:1px solid rgba(255,92,114,.25)}
+.modal-config{font-size:12px;color:var(--text3)}
+.modal-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px}
+.modal-stat{background:var(--bg3);padding:14px 12px}
+.modal-stat .sv{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;margin-bottom:4px}
+.modal-stat .sl{font-size:10px;color:var(--text3);letter-spacing:.04em;text-transform:uppercase}
+.modal-chart-section{}
+.range-tabs{display:flex;gap:6px;margin-bottom:14px}
+.range-tab{background:transparent;border:1px solid var(--border);color:var(--text2);padding:5px 14px;border-radius:6px;font-size:12px;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .15s}
+.range-tab:hover{border-color:var(--border2);color:var(--text)}
+.range-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.modal-chart-label{font-size:11px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;font-weight:600}
+.modal-chart-inner{height:160px;position:relative;display:flex;align-items:stretch}
+.modal-y-labels{display:flex;flex-direction:column;justify-content:space-between;padding:2px 0;width:40px;flex-shrink:0}
+.modal-y-labels span{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;text-align:right;padding-right:6px}
+.modal-chart-loading,.modal-no-data{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text3);font-size:13px;width:100%;height:100%}
+.spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.modal-foot{display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.modal-foot-info{font-size:12px;color:var(--text3)}
+.modal-visit{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;transition:background .2s}
+.modal-visit:hover{background:var(--accent2)}
+.modal-visit.hidden{display:none}
+.modal-visit svg{width:12px;height:12px}
+.hidden{display:none!important}
 
-.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);display:inline-block;animation:pulse 2s infinite}
-
-@media(max-width:768px){
-  nav{padding:12px 20px}
-  .nav-links{display:none}
-  .hero{padding:100px 20px 60px}
-  .rate-hero{flex-direction:column}
-  .rate-hero-side{flex-direction:row}
-  section{padding:60px 20px}
+@media(max-width:900px){
+  .method-grid,.roadmap{grid-template-columns:1fr 1fr}
   .stats-row{grid-template-columns:1fr 1fr}
-  .roadmap{flex-direction:column}
-  .method-grid{grid-template-columns:1fr}
+  .index-cards{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding-bottom:8px}
+  .index-card{min-width:170px;max-width:170px}
+  .active-panel{flex-direction:column;align-items:flex-start}
+  .ap-stats{justify-content:flex-start}
+}
+@media(max-width:600px){
+  .method-grid,.roadmap{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
   table{font-size:12px}
-  th,td{padding:12px 16px}
-  .gate-input,.gate-btn{width:280px}
-  .modal-stats-row{grid-template-columns:1fr 1fr}
-  .filter-bar{gap:4px}
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
@@ -288,8 +329,8 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
 <nav>
   <div class="logo">ICX<span>.global</span></div>
   <div class="nav-links">
-    <a href="#rate">Live Rate</a>
-    <a href="#providers">Providers</a>
+    <a href="#rates">Rates</a>
+    <a href="#providers">Market Data</a>
     <a href="#methodology">Methodology</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#subscribe" class="nav-cta">Get API Access</a>
@@ -300,46 +341,118 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
   <div class="ticker-content" id="ticker"></div>
 </div>
 
-<section class="hero">
-  <div class="hero-tag">The Reference Rate for AI Compute</div>
-  <h1>ICX H100<br>SXM5 Spot</h1>
-  <p>A transparent, repeatable reference rate for deliverable AI compute. SXM5 NVLink providers only. One instrument. One anchor. Built so the market can mature.</p>
-  <div class="rate-hero" id="rate">
-    <div class="rate-hero-main">
-      <div class="label">ICX H100 SXM5 US Spot Reference Rate</div>
-      <div class="value">$<span id="ref-rate">—</span></div>
-      <div class="sub">per GPU-hour · Settlement <span id="settle-date"></span> · <span class="live-dot"></span> Live</div>
+<!-- ========== HERO ========== -->
+<section class="hero" id="rates">
+  <div class="hero-tag"><span class="live-dot"></span> Live Market Data</div>
+  <h1>AI Compute<br>Reference Rates</h1>
+  <p>Transparent, independently calculated reference rates for GPU compute. Used by enterprises to benchmark spot pricing and anchor procurement negotiations.</p>
+
+  <!-- Multi-index card row -->
+  <div class="index-cards" id="index-cards">
+
+    <!-- H100 SXM5 — live -->
+    <div class="index-card active" data-gpu="H100 SXM5 80GB" id="card-sxm5">
+      <div class="ic-label">ICX H100S</div>
+      <div class="ic-sublabel">H100 SXM5 · NVLink · 80GB</div>
+      <div class="ic-rate">$<span id="icx-sxm5-rate">—</span></div>
+      <div class="ic-bottom">
+        <span class="ic-live"><span class="live-dot"></span>Live</span>
+        <span class="ic-chg neutral" id="icx-sxm5-chg">—</span>
+      </div>
     </div>
-    <div class="rate-hero-side">
-      <div class="stat">
-        <div class="label">24h Change</div>
+
+    <!-- H100 PCIe — live -->
+    <div class="index-card" data-gpu="H100 PCIe 80GB" id="card-pcie">
+      <div class="ic-label">ICX H100P</div>
+      <div class="ic-sublabel">H100 PCIe · 80GB</div>
+      <div class="ic-rate">$<span id="icx-pcie-rate">—</span></div>
+      <div class="ic-bottom">
+        <span class="ic-live"><span class="live-dot"></span>Live</span>
+        <span class="ic-chg neutral" id="icx-pcie-chg">—</span>
+      </div>
+    </div>
+
+    <!-- A100 — coming soon -->
+    <div class="index-card coming">
+      <div class="ic-label">ICX A100</div>
+      <div class="ic-sublabel">A100 SXM4 · 80GB</div>
+      <div class="ic-rate ic-soon">—</div>
+      <div class="ic-bottom"><span class="ic-badge-soon">Coming Soon</span></div>
+    </div>
+
+    <!-- H200 — coming soon -->
+    <div class="index-card coming">
+      <div class="ic-label">ICX H200</div>
+      <div class="ic-sublabel">H200 SXM5 · 141GB</div>
+      <div class="ic-rate ic-soon">—</div>
+      <div class="ic-bottom"><span class="ic-badge-soon">Coming Soon</span></div>
+    </div>
+
+    <!-- L40S — coming soon -->
+    <div class="index-card coming">
+      <div class="ic-label">ICX L40S</div>
+      <div class="ic-sublabel">L40S · 48GB</div>
+      <div class="ic-rate ic-soon">—</div>
+      <div class="ic-bottom"><span class="ic-badge-soon">Coming Soon</span></div>
+    </div>
+
+  </div>
+
+  <!-- Active index stats panel -->
+  <div class="active-panel" id="rate">
+    <div class="ap-main">
+      <div class="ap-rate-label" id="ap-index-label">ICX H100 SXM5 Reference Rate</div>
+      <div class="ap-rate-value">$<span id="ref-rate">—</span></div>
+      <div class="ap-rate-sub">
+        <span>per GPU-hour</span>
+        <span>·</span>
+        <span>Settlement <span id="settle-date"></span></span>
+        <span>·</span>
+        <span class="live-dot"></span>
+        <span>Updated hourly</span>
+      </div>
+    </div>
+    <div class="ap-stats">
+      <div class="ap-stat">
         <div class="val neutral" id="daily-chg">—</div>
+        <div class="lbl">24h Change</div>
       </div>
-      <div class="stat">
-        <div class="label">7d Range</div>
+      <div class="ap-stat">
         <div class="val neutral" id="week-range">—</div>
+        <div class="lbl">7-Day Range</div>
       </div>
-      <div class="stat">
-        <div class="label">Providers Sampled</div>
+      <div class="ap-stat">
         <div class="val" id="prov-count">—</div>
+        <div class="lbl">Providers</div>
       </div>
     </div>
   </div>
-  <div class="scroll-cue"><span>Explore</span><div class="scroll-arrow"></div></div>
+
+  <div class="scroll-cue"><span>Market Data</span><div class="scroll-arrow"></div></div>
 </section>
 
+<!-- ========== PROVIDER TABLE ========== -->
 <section id="providers">
   <div class="container">
     <div class="section-tag">Market Data</div>
-    <div class="section-title">H100 Spot Prices Across Providers</div>
-    <div class="section-sub">Normalized to $/GPU-hour for a single NVIDIA H100 80GB in the US. On-demand rates only. SXM5 providers contribute to the ICX rate; PCIe variants tracked separately. Click any provider for price history.</div>
-    <div class="table-wrap">
+    <div class="section-title" id="market-section-title">GPU Spot Prices Across Providers</div>
+    <div class="section-sub">Normalized to $/GPU-hour. On-demand rates unless tagged Spot. Click any row for price history and provider detail.</div>
+
+    <!-- GPU type tabs -->
+    <div class="gpu-tab-label">GPU Type</div>
+    <div class="gpu-tabs" id="gpu-tabs">
+      <button class="gpu-tab active" data-gpu="all">All GPUs</button>
+      <button class="gpu-tab" data-gpu="H100 SXM5 80GB">H100 SXM5</button>
+      <button class="gpu-tab" data-gpu="H100 PCIe 80GB">H100 PCIe</button>
+    </div>
+
+    <div class="table-wrap" style="margin-top:16px">
       <div class="stale-banner hidden" id="stale-banner">⚠ Price data may be stale — last update was over 2 hours ago. Scrapers may be delayed.</div>
       <div class="table-header">
-        <h3>Provider Price Feed</h3>
+        <h3>Provider Price Feed <span id="filter-count" style="font-size:12px;color:var(--text3);font-weight:400;margin-left:8px"></span></h3>
         <div class="badge"><span class="pulse"></span>Live Data</div>
       </div>
-      <!-- Filter bar -->
+      <!-- Tier / availability filter bar -->
       <div class="filter-bar" id="filter-bar">
         <span class="filter-label">Tier</span>
         <button class="filter-pill active" data-tier="all">All</button>
@@ -350,13 +463,14 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
         <button class="filter-pill" id="avail-filter">Available Only</button>
         <div class="filter-sep"></div>
         <input class="filter-search" id="provider-search" type="text" placeholder="Search provider…">
-        <span class="filter-count" id="filter-count"></span>
       </div>
       <table id="provider-table">
         <thead>
           <tr>
             <th class="sortable" data-col="name">Provider <i class="sort-icon"></i></th>
             <th class="sortable" data-col="tier">Tier <i class="sort-icon"></i></th>
+            <th>Model</th>
+            <th>GPU</th>
             <th class="sortable sort-asc" data-col="price">$/GPU-hr <i class="sort-icon"></i></th>
             <th class="sortable" data-col="delta">Δ vs ICX <i class="sort-icon"></i></th>
             <th>Price Data</th>
@@ -367,18 +481,24 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
         <tbody></tbody>
       </table>
     </div>
-    <div class="chart-area">
-      <div class="label">ICX H100 US Spot — 30 Day History</div>
+
+    <!-- 30-day chart for selected index -->
+    <div class="chart-area" style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;margin-top:16px">
+      <div class="label" id="chart-label">ICX H100 SXM5 — 30-Day Rate History</div>
       <div class="chart-canvas">
-        <div class="y-labels"><span>$3.40</span><span>$3.00</span><span>$2.60</span><span>$2.20</span><span>$1.80</span></div>
+        <div class="y-labels" id="chart-y-labels">
+          <span>$3.40</span><span>$3.00</span><span>$2.60</span><span>$2.20</span><span>$1.80</span>
+        </div>
         <svg class="chart-svg" viewBox="0 0 1100 230" preserveAspectRatio="none" id="chart-svg" style="margin-left:40px;width:calc(100% - 40px)">
           <defs><linearGradient id="grd" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(79,140,255,.25)"/><stop offset="100%" stop-color="rgba(79,140,255,0)"/></linearGradient></defs>
         </svg>
         <div class="x-labels" id="x-labels"></div>
       </div>
     </div>
-    <div class="stats-row">
-      <div class="stat-card"><div class="num up" id="stat-icx">—</div><div class="lbl">ICX Spot Rate</div></div>
+
+    <!-- Stats row -->
+    <div class="stats-row" style="border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-top:16px;background:var(--border)">
+      <div class="stat-card"><div class="num up" id="stat-icx">—</div><div class="lbl">ICX Rate</div></div>
       <div class="stat-card"><div class="num" id="stat-hyper-avg">—</div><div class="lbl">Hyperscaler Avg</div></div>
       <div class="stat-card"><div class="num" id="stat-spec-low">—</div><div class="lbl">Specialist Low</div></div>
       <div class="stat-card"><div class="num" id="stat-dispersion">—</div><div class="lbl">Price Dispersion</div></div>
@@ -386,36 +506,39 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
   </div>
 </section>
 
-<section id="methodology" style="background:var(--bg2)">
-  <div class="container">
+<!-- ========== METHODOLOGY ========== -->
+<section id="methodology" style="background:var(--bg2);border-top:1px solid var(--border)">
+  <div class="container" style="padding-top:80px;padding-bottom:80px">
     <div class="section-tag">Methodology</div>
-    <div class="section-title">How ICX Calculates the Rate</div>
-    <div class="section-sub">Transparent. Repeatable. Independent of hardware cost models.</div>
+    <div class="section-title">How ICX Calculates Each Rate</div>
+    <div class="section-sub">Transparent. Repeatable. Independent of hardware cost models. Each index uses the same methodology applied to its own provider panel.</div>
     <div class="method-grid">
-      <div class="method-card"><div class="method-num">01</div><h4>Collect</h4><p>Gather executable on-demand hourly pricing from a diversified panel of US-based cloud providers. Multi-GPU clusters normalized to per-GPU equivalent. Automated scrapers run hourly; remaining providers updated manually.</p></div>
-      <div class="method-card"><div class="method-num">02</div><h4>Normalize</h4><p>Standard Compute Unit: 1× NVIDIA H100 SXM5 80GB (NVLink), US-located, on-demand, hourly provisionable. PCIe H100 variants are tracked separately and excluded from the primary SXM5 index. All prices in $/GPU-hour.</p></div>
-      <div class="method-card"><div class="method-num">03</div><h4>Clean</h4><p>Remove unavailable providers. Require a minimum panel of 8 available SXM5 providers — rate is not published if the panel is smaller. Trim the bottom and top 15% of remaining prices to remove statistical outliers.</p></div>
-      <div class="method-card"><div class="method-num">04</div><h4>Publish</h4><p>Rate updated hourly from live scrapes. Each computation uses only currently-available providers, so the rate reflects executable spot prices — not stale listings.</p></div>
-      <div class="method-card"><div class="method-num">05</div><h4>Price ≠ Cost</h4><p>ICX reflects transaction prices, not hardware ASP or production expense. Commodity benchmarks measure markets, not drilling costs.</p></div>
+      <div class="method-card"><div class="method-num">01</div><h4>Collect</h4><p>Automated scrapers run hourly, fetching executable on-demand pricing from a diversified panel of US-based cloud providers. Multi-GPU clusters normalized to per-GPU equivalent.</p></div>
+      <div class="method-card"><div class="method-num">02</div><h4>Normalize</h4><p>Each index anchors to a specific Standard Compute Unit — e.g. 1× NVIDIA H100 SXM5 80GB (NVLink), US-located, on-demand, hourly provisionable. PCIe and SXM5 variants are tracked as separate indexes. All prices in $/GPU-hour.</p></div>
+      <div class="method-card"><div class="method-num">03</div><h4>Clean</h4><p>Remove unavailable providers. Require a minimum panel (8 providers for H100 SXM5, 3 for H100 PCIe) — rate not published if panel is smaller. Trim the bottom and top 15% of remaining prices to remove statistical outliers.</p></div>
+      <div class="method-card"><div class="method-num">04</div><h4>Publish</h4><p>Rates updated hourly from live scrapes. Each computation uses only currently-available providers, so the rate reflects executable spot prices — not stale listings. Each GPU type is stored as an independent time series.</p></div>
+      <div class="method-card"><div class="method-num">05</div><h4>Price ≠ Cost</h4><p>ICX reflects transaction prices, not hardware ASP or production expense. Commodity benchmarks measure markets, not drilling costs. The rate anchors procurement — it is not a cost model.</p></div>
       <div class="method-card"><div class="method-num">06</div><h4>Governance</h4><p>Published methodology. Documented update process. Minimum data requirements enforced in code. Variant separation documented and applied consistently. The remedy for data risk is governance, not complexity.</p></div>
     </div>
   </div>
 </section>
 
+<!-- ========== ROADMAP ========== -->
 <section id="roadmap">
-  <div class="container">
+  <div class="container" style="padding-top:80px;padding-bottom:80px">
     <div class="section-tag">Strategic Sequence</div>
     <div class="section-title">Benchmark First. Then Everything Else.</div>
     <div class="section-sub">Derivatives cannot precede credibility. ICX follows the established path: measure → adopt → structure → financialize.</div>
     <div class="roadmap">
-      <div class="roadmap-phase active"><div class="phase-tag now">Phase 1 — Now</div><h4>Measurement</h4><p>Publish a consistent daily reference rate. Establish volatility patterns, seasonal shifts, and supply tightness in a neutral instrument.</p></div>
-      <div class="roadmap-phase"><div class="phase-tag next">Phase 2</div><h4>Adoption</h4><p>Startups benchmark vendor quotes to ICX. Procurement teams embed ICX in forecasts. The signal: "ICX plus spread" enters the market vocabulary.</p></div>
+      <div class="roadmap-phase active"><div class="phase-tag now">Phase 1 — Now</div><h4>Measurement</h4><p>Publish consistent hourly reference rates across GPU variants. Establish volatility patterns, seasonal shifts, and supply tightness in neutral instruments.</p></div>
+      <div class="roadmap-phase"><div class="phase-tag next">Phase 2</div><h4>Adoption</h4><p>Enterprises benchmark vendor quotes to ICX. Procurement teams embed ICX in forecasts. The signal: "ICX plus spread" enters the market vocabulary.</p></div>
       <div class="roadmap-phase"><div class="phase-tag next">Phase 3</div><h4>Structure</h4><p>Term expectations, forward curves, and realized volatility measures derived from observed spot data. Analytic layers, not separate businesses.</p></div>
       <div class="roadmap-phase"><div class="phase-tag next">Phase 4</div><h4>Financialization</h4><p>Bilateral swaps. Cash-settled futures. Only after the benchmark is sufficiently trusted and liquid. Trust is the prerequisite, not the product.</p></div>
     </div>
   </div>
 </section>
 
+<!-- ========== CTA ========== -->
 <section class="cta-section" id="subscribe">
   <h2>ICX measures the market<br>so the market can mature.</h2>
   <p>Get the daily rate delivered to your inbox. Access the API. Reference ICX in your next vendor negotiation.</p>
@@ -425,7 +548,7 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
   </div>
 </section>
 
-<footer>&copy; 2026 ICX Global. The Reference Rate for AI Compute. All rights reserved.</footer>
+<footer>&copy; 2026 ICX Global. AI Compute Reference Rates. All rights reserved.</footer>
 
 <!-- ========== PROVIDER MODAL ========== -->
 <div class="modal-overlay" id="modal-overlay">
@@ -473,13 +596,14 @@ footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:v
 
 </div><!-- /site -->
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 // ========== PASSWORD GATE ==========
-const PASS = "Not my monkeys";
-const gateEl = document.getElementById('gate');
-const siteEl = document.getElementById('site');
+const PASS    = "Not my monkeys";
+const gateEl  = document.getElementById('gate');
+const siteEl  = document.getElementById('site');
 const pwInput = document.getElementById('gate-pw');
-const errEl = document.getElementById('gate-err');
+const errEl   = document.getElementById('gate-err');
 
 function tryLogin(){
   if(pwInput.value === PASS){
@@ -504,38 +628,118 @@ const SUPABASE_ANON_KEY = 'sb_publishable_WwVV9q2p27ENF7fDx69caQ_jpExegjf';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let providers = [];
-let icxRate   = 0;
+let providers    = [];
+let icxRates     = {};   // { 'H100 SXM5 80GB': 2.87, 'H100 PCIe 80GB': 1.94, ... }
+let icxRate      = 0;    // current active rate for table delta
+let activeIndexGpu = 'H100 SXM5 80GB';
 
 // ── Freshness helper ──────────────────────────────────────────────
-// sourceType: 'api' = auto-scraped (show live freshness)
-//             'manual' = hand-maintained (show "Listed · date")
 function freshnessInfo(scrapedAt, sourceType){
   if(!scrapedAt) return {cls:'f-stale', label:'—'};
-  // Manually-maintained providers: show "Listed · Mon D" — not a staleness issue
   if(sourceType === 'manual'){
     const d   = new Date(scrapedAt);
     const lbl = d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
     return {cls:'f-listed', label:`Listed · ${lbl}`};
   }
-  // Auto-scraped providers: show live freshness with coloured dot
   const mins = (Date.now() - new Date(scrapedAt)) / 60000;
   if(mins < 60)   return {cls:'f-fresh', label: mins < 2 ? 'just now' : `${Math.round(mins)}m ago`};
   if(mins < 1440) return {cls:'f-aging', label:`${Math.round(mins/60)}h ago`};
   return {cls:'f-stale', label:`${Math.round(mins/1440)}d ago`};
 }
 
+// ── Model badge helper ────────────────────────────────────────────
+function modelBadge(tier, pricingModel){
+  const isSpot = tier === 'Marketplace' || pricingModel === 'spot';
+  return isSpot
+    ? '<span class="model-badge model-spot">Spot</span>'
+    : '<span class="model-badge model-ondemand">On-demand</span>';
+}
+
+// ── GPU type abbreviation ─────────────────────────────────────────
+function gpuShort(gpuType){
+  if(!gpuType) return 'H100 SXM5';
+  if(gpuType.includes('PCIe')) return 'H100 PCIe';
+  if(gpuType.includes('SXM5') || gpuType.includes('SXM')) return 'H100 SXM5';
+  if(gpuType.includes('A100')) return 'A100';
+  if(gpuType.includes('H200')) return 'H200';
+  if(gpuType.includes('L40S')) return 'L40S';
+  return gpuType.replace(' 80GB','').replace(' 141GB','').replace(' 48GB','');
+}
+
 // ── Filter / sort state ───────────────────────────────────────────
-let filterTier  = 'all';
-let filterAvail = false;
-let filterSearch= '';
-let sortCol     = 'price';
-let sortDir     = 'asc';
+let filterTier   = 'all';
+let filterGpu    = 'all';  // 'all' | 'H100 SXM5 80GB' | 'H100 PCIe 80GB'
+let filterAvail  = false;
+let filterSearch = '';
+let sortCol      = 'price';
+let sortDir      = 'asc';
 
 document.getElementById('settle-date').textContent =
   new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
 
-// ── Filter bar wiring ─────────────────────────────────────────────
+// ── Index card wiring ─────────────────────────────────────────────
+document.querySelectorAll('.index-card:not(.coming)').forEach(card => {
+  card.addEventListener('click', () => {
+    switchActiveIndex(card.dataset.gpu);
+  });
+});
+
+function switchActiveIndex(gpu){
+  activeIndexGpu = gpu;
+  icxRate = icxRates[gpu] || 0;
+
+  // Update card highlight
+  document.querySelectorAll('.index-card:not(.coming)').forEach(c => {
+    c.classList.toggle('active', c.dataset.gpu === gpu);
+  });
+
+  // Update active panel label
+  const labels = {
+    'H100 SXM5 80GB': 'ICX H100 SXM5 Reference Rate',
+    'H100 PCIe 80GB': 'ICX H100 PCIe Reference Rate',
+  };
+  document.getElementById('ap-index-label').textContent = labels[gpu] || 'ICX Reference Rate';
+
+  // Update stats panel rate display
+  document.getElementById('ref-rate').textContent =
+    (icxRates[gpu] || 0).toFixed(2);
+
+  // Update chart label
+  const chartLabels = {
+    'H100 SXM5 80GB': 'ICX H100 SXM5 — 30-Day Rate History',
+    'H100 PCIe 80GB': 'ICX H100 PCIe — 30-Day Rate History',
+  };
+  document.getElementById('chart-label').textContent =
+    chartLabels[gpu] || 'ICX Rate — 30-Day History';
+
+  // Sync GPU tab to match active index
+  syncGpuTab(gpu);
+
+  renderTable();
+  renderStats();
+  fetchHistory(gpu);
+}
+
+// ── GPU tab wiring ────────────────────────────────────────────────
+document.querySelectorAll('.gpu-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const gpu = tab.dataset.gpu;
+    filterGpu = gpu;
+    document.querySelectorAll('.gpu-tab').forEach(t =>
+      t.classList.toggle('active', t.dataset.gpu === gpu));
+    // If selecting a specific GPU, also switch the active index card
+    if(gpu !== 'all') switchActiveIndex(gpu);
+    renderTable();
+  });
+});
+
+function syncGpuTab(gpu){
+  filterGpu = gpu;
+  document.querySelectorAll('.gpu-tab').forEach(t =>
+    t.classList.toggle('active', t.dataset.gpu === gpu));
+}
+
+// ── Tier filter wiring ────────────────────────────────────────────
 document.querySelectorAll('[data-tier]').forEach(btn => {
   btn.addEventListener('click', () => {
     filterTier = btn.dataset.tier;
@@ -567,16 +771,23 @@ document.querySelectorAll('th.sortable').forEach(th => {
   th.addEventListener('click', () => {
     const col = th.dataset.col;
     if(sortCol === col){ sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
-    else { sortCol = col; sortDir = col === 'name' || col === 'tier' ? 'asc' : 'asc'; }
+    else { sortCol = col; sortDir = 'asc'; }
     document.querySelectorAll('th.sortable').forEach(t => t.classList.remove('sort-asc','sort-desc'));
     th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
     renderTable();
   });
 });
 
+// ── Get ICX rate for a given GPU type ────────────────────────────
+function icxRateFor(gpuType){
+  if(!gpuType) return icxRates['H100 SXM5 80GB'] || icxRate || 0;
+  return icxRates[gpuType] || icxRates['H100 SXM5 80GB'] || icxRate || 0;
+}
+
 // ── Apply filters + sort ──────────────────────────────────────────
 function filteredProviders(){
   let list = [...providers];
+  if(filterGpu !== 'all') list = list.filter(p => p.gpuType === filterGpu);
   if(filterTier !== 'all') list = list.filter(p => p.tier === filterTier);
   if(filterAvail) list = list.filter(p => p.avail);
   if(filterSearch) list = list.filter(p => p.name.toLowerCase().includes(filterSearch));
@@ -585,7 +796,10 @@ function filteredProviders(){
     if(sortCol === 'name')  { va=a.name; vb=b.name; }
     else if(sortCol === 'tier')  { va=a.tier; vb=b.tier; }
     else if(sortCol === 'price') { va=a.price; vb=b.price; }
-    else if(sortCol === 'delta') { va=a.price-icxRate; vb=b.price-icxRate; }
+    else if(sortCol === 'delta') {
+      va = a.price - icxRateFor(a.gpuType);
+      vb = b.price - icxRateFor(b.gpuType);
+    }
     else { va=a.price; vb=b.price; }
     if(va < vb) return sortDir === 'asc' ? -1 : 1;
     if(va > vb) return sortDir === 'asc' ? 1 : -1;
@@ -599,14 +813,16 @@ const tbody = document.querySelector('#provider-table tbody');
 function renderTable(){
   tbody.innerHTML = '';
   const list = filteredProviders();
+  const total = filterGpu === 'all' ? providers.length : providers.filter(p => p.gpuType === filterGpu).length;
   document.getElementById('filter-count').textContent =
-    list.length === providers.length ? '' : `${list.length} of ${providers.length}`;
+    list.length === total ? '' : `${list.length} of ${total}`;
 
   list.forEach(p => {
-    const d  = p.price - icxRate;
+    const ref  = icxRateFor(p.gpuType);
+    const d    = p.price - ref;
     const sign = d >= 0 ? '+' : '';
     const cls  = d > 0 ? 'up' : 'down';
-    const pct  = icxRate ? ((d/icxRate)*100).toFixed(1) : '0.0';
+    const pct  = ref ? ((d/ref)*100).toFixed(1) : '0.0';
     const fr   = freshnessInfo(p.scrapedAt, p.sourceType);
     const nameCell = p.website
       ? `<a href="${p.website}" target="_blank" rel="noopener noreferrer" class="provider-link" onclick="event.stopPropagation()">${p.name}</a>`
@@ -614,7 +830,9 @@ function renderTable(){
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="provider-name">${nameCell}</td>
-      <td><span class="tier-badge ${p.tierCls}">${p.tier}</span></td>
+      <td><span class="tier-badge tier-${p.tier}">${p.tier}</span></td>
+      <td>${modelBadge(p.tier, p.pricingModel)}</td>
+      <td class="gpu-type-cell">${gpuShort(p.gpuType)}</td>
       <td class="price-val">$${p.price.toFixed(2)}</td>
       <td class="delta ${cls}">${sign}$${Math.abs(d).toFixed(2)} (${sign}${pct}%)</td>
       <td><span class="freshness ${fr.cls}"><span class="fresh-dot"></span>${fr.label}</span></td>
@@ -629,24 +847,36 @@ function renderTable(){
 function renderTicker(){
   const el = document.getElementById('ticker');
   let h = '';
-  for(let i=0;i<2;i++){providers.forEach(p=>{
-    const d=p.price-icxRate,s=d>=0?'+':'',c=d>=0?'up':'down';
-    h+=`<div class="ticker-item"><span class="name">${p.name}</span> $${p.price.toFixed(2)} <span class="${c}">${s}${icxRate?((d/icxRate)*100).toFixed(1):0}%</span></div>`;
+  const display = providers.filter(p => p.avail).slice(0, 30);
+  for(let i=0;i<2;i++){display.forEach(p=>{
+    const ref=icxRateFor(p.gpuType), d=p.price-ref, s=d>=0?'+':'',c=d>=0?'up':'down';
+    h+=`<div class="ticker-item"><span class="name">${p.name}</span> $${p.price.toFixed(2)} <span class="${c}">${s}${ref?((d/ref)*100).toFixed(1):0}%</span></div>`;
   });}
   el.innerHTML = h;
 }
 
 // ── Stats row ─────────────────────────────────────────────────────
 function renderStats(){
-  document.getElementById('ref-rate').textContent   = icxRate.toFixed(2);
-  document.getElementById('stat-icx').textContent   = '$'+icxRate.toFixed(2);
-  document.getElementById('prov-count').textContent = providers.filter(p=>p.avail).length;
-  const hp = providers.filter(p=>p.tier==='Hyperscaler').map(p=>p.price);
-  const sp = providers.filter(p=>p.tier==='Specialist').map(p=>p.price);
-  const ap = providers.map(p=>p.price);
+  const activeRate = icxRates[activeIndexGpu] || icxRate || 0;
+  document.getElementById('ref-rate').textContent   = activeRate.toFixed(2);
+  document.getElementById('stat-icx').textContent   = '$'+activeRate.toFixed(2);
+
+  // Filter to relevant providers for stats
+  const relevant = filterGpu === 'all'
+    ? providers.filter(p => p.gpuType === activeIndexGpu)
+    : providers.filter(p => p.gpuType === filterGpu);
+
+  document.getElementById('prov-count').textContent = relevant.filter(p=>p.avail).length;
+
+  const hp = relevant.filter(p=>p.tier==='Hyperscaler').map(p=>p.price);
+  const sp = relevant.filter(p=>p.tier==='Specialist').map(p=>p.price);
+  const ap = relevant.map(p=>p.price);
   if(hp.length) document.getElementById('stat-hyper-avg').textContent='$'+(hp.reduce((a,b)=>a+b,0)/hp.length).toFixed(2);
+  else          document.getElementById('stat-hyper-avg').textContent='—';
   if(sp.length) document.getElementById('stat-spec-low').textContent ='$'+Math.min(...sp).toFixed(2);
+  else          document.getElementById('stat-spec-low').textContent='—';
   if(ap.length>1) document.getElementById('stat-dispersion').textContent=(Math.max(...ap)/Math.min(...ap)).toFixed(1)+'×';
+  else            document.getElementById('stat-dispersion').textContent='—';
 }
 
 function render24hAnd7d(history){
@@ -661,14 +891,53 @@ function render24hAnd7d(history){
   document.getElementById('week-range').textContent=`$${Math.min(...wk).toFixed(2)} – $${Math.max(...wk).toFixed(2)}`;
 }
 
-// ── Main ICX chart ────────────────────────────────────────────────
+// ── Update individual index card 24h change ───────────────────────
+function updateIndexCards(historyData){
+  // historyData: all rows from icx_rate_history (last 30d), with gpu_type
+  const groups = {};
+  (historyData||[]).forEach(r => {
+    const gpu = r.gpu_type || 'H100 SXM5 80GB';
+    if(!groups[gpu]) groups[gpu] = [];
+    groups[gpu].push(parseFloat(r.rate));
+  });
+
+  function applyCard(prefix, gpu){
+    const rates = groups[gpu];
+    if(!rates||!rates.length) return;
+    const latest = rates[rates.length-1];
+    const dayAgo = rates.length>=24 ? rates[rates.length-24] : rates[0];
+    const diff   = latest-dayAgo, pct=((diff/dayAgo)*100).toFixed(1), sign=diff>=0?'+':'';
+    const cls    = diff>=0?'up':'down';
+    const rateEl = document.getElementById(prefix+'-rate');
+    const chgEl  = document.getElementById(prefix+'-chg');
+    if(rateEl) rateEl.textContent = latest.toFixed(2);
+    if(chgEl){ chgEl.textContent=`${sign}${pct}% 24h`; chgEl.className='ic-chg '+cls; }
+  }
+
+  applyCard('icx-sxm5','H100 SXM5 80GB');
+  applyCard('icx-pcie','H100 PCIe 80GB');
+}
+
+// ── Main ICX chart (dynamic Y-axis) ──────────────────────────────
 function drawChart(pts){
   const svg=document.getElementById('chart-svg');
   Array.from(svg.children).forEach(c=>{ if(c.tagName!=='defs') svg.removeChild(c); });
   if(!pts||pts.length<2) return;
-  const W=1100,H=230,minY=1.8,maxY=3.4;
+
+  const W=1100,H=230;
+  const rawMin = Math.min(...pts), rawMax = Math.max(...pts);
+  const pad    = Math.max((rawMax-rawMin)*0.15, rawMax*0.05, 0.1);
+  const minY   = rawMin - pad, maxY = rawMax + pad;
   const sY=v=>H-((v-minY)/(maxY-minY))*H;
   const sX=i=>(i/(pts.length-1))*W;
+
+  // Update Y labels dynamically
+  const ylEl=document.getElementById('chart-y-labels');
+  if(ylEl){
+    const steps=[maxY, maxY*.75+minY*.25, (maxY+minY)/2, maxY*.25+minY*.75, minY];
+    ylEl.innerHTML=steps.map(v=>`<span>$${v.toFixed(2)}</span>`).join('');
+  }
+
   let d=pts.map((v,i)=>`${i===0?'M':'L'}${sX(i).toFixed(1)},${sY(v).toFixed(1)}`).join(' ');
   const area=document.createElementNS('http://www.w3.org/2000/svg','path');
   area.setAttribute('d',d+` L${W},${H} L0,${H} Z`);area.setAttribute('fill','url(#grd)');svg.appendChild(area);
@@ -690,7 +959,6 @@ let selectedRow = null;
 let modalDays   = 30;
 let modalCurrentProvider = null;
 
-// ── Range tab wiring ──────────────────────────────────────────────
 document.querySelectorAll('.range-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     modalDays = parseInt(tab.dataset.days, 10);
@@ -707,52 +975,38 @@ document.querySelectorAll('.range-tab').forEach(tab => {
 });
 
 function openModal(p){
-  // Header
   document.getElementById('modal-name').textContent  = p.name;
   document.getElementById('modal-price').textContent = '$'+p.price.toFixed(2);
   document.getElementById('modal-config').textContent= '· '+p.config;
 
-  // Tier badge
   const tb = document.getElementById('modal-tier-badge');
   tb.textContent  = p.tier;
-  tb.className    = 'tier-badge '+p.tierCls;
+  tb.className    = 'tier-badge tier-'+p.tier;
 
-  // Delta vs ICX
-  const d    = p.price - icxRate;
+  const ref  = icxRateFor(p.gpuType);
+  const d    = p.price - ref;
   const sign = d>=0 ? '+' : '';
-  const pct  = icxRate ? ((d/icxRate)*100).toFixed(1) : '0.0';
+  const pct  = ref ? ((d/ref)*100).toFixed(1) : '0.0';
   const db   = document.getElementById('modal-delta-badge');
   db.textContent = `${sign}$${Math.abs(d).toFixed(2)} vs ICX (${sign}${pct}%)`;
-  db.className   = 'modal-delta-badge '+(d>=0?'down':'up'); // down=expensive, up=cheap
+  db.className   = 'modal-delta-badge '+(d>=0?'down':'up');
 
-  // Reset stats
   ['ms-high','ms-low','ms-avg','ms-pts'].forEach(id=>{document.getElementById(id).textContent='—';});
   document.getElementById('modal-updated').textContent = p.scrapedAt
     ? 'Last updated: '+new Date(p.scrapedAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})
     : '';
 
-  // Visit provider link
   const visitEl = document.getElementById('modal-visit');
-  if(p.website){
-    visitEl.href = p.website;
-    visitEl.classList.remove('hidden');
-  } else {
-    visitEl.classList.add('hidden');
-  }
+  if(p.website){ visitEl.href = p.website; visitEl.classList.remove('hidden'); }
+  else          { visitEl.classList.add('hidden'); }
 
-  // Reset range tabs to 30D
   document.querySelectorAll('.range-tab').forEach(t => t.classList.toggle('active', t.dataset.days==='30'));
   modalDays = 30;
   document.getElementById('modal-chart-label').textContent = 'Price History — Last 30 Days';
+  document.getElementById('modal-chart-inner').innerHTML =
+    '<div class="modal-chart-loading"><div class="spinner"></div> Loading history…</div>';
 
-  // Reset chart
-  const inner = document.getElementById('modal-chart-inner');
-  inner.innerHTML = '<div class="modal-chart-loading"><div class="spinner"></div> Loading history…</div>';
-
-  // Highlight row
   if(selectedRow) selectedRow.classList.remove('row-selected');
-  selectedRow = document.querySelector(`tbody tr:has(td:first-child:not(:empty))`);
-  // Find the right row by name
   Array.from(document.querySelectorAll('tbody tr')).forEach(r=>{
     if(r.cells[0]&&r.cells[0].textContent===p.name){ selectedRow=r; r.classList.add('row-selected'); }
   });
@@ -760,8 +1014,6 @@ function openModal(p){
   modalCurrentProvider = p;
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
-
-  // Fetch history
   fetchProviderHistory(p.providerId, p.price);
 }
 
@@ -776,10 +1028,8 @@ document.getElementById('modal-close').addEventListener('click', closeModal);
 overlay.addEventListener('click', e=>{ if(e.target===overlay) closeModal(); });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 
-// ── Fetch provider price history ──────────────────────────────
 async function fetchProviderHistory(providerId, currentPrice){
   const inner = document.getElementById('modal-chart-inner');
-
   try {
     const since = new Date(Date.now()-modalDays*24*60*60*1000).toISOString();
     const {data,error} = await db
@@ -788,77 +1038,47 @@ async function fetchProviderHistory(providerId, currentPrice){
       .eq('provider_id', providerId)
       .gte('scraped_at', since)
       .order('scraped_at',{ascending:true});
-
     if(error) throw error;
-
     let pts = (data||[]).map(r=>parseFloat(r.price_usd));
-
-    // If only one data point (initial seed), show flat line at current price
     if(pts.length < 2){ pts = [currentPrice, currentPrice]; }
-
-    // Stats
-    const hi  = Math.max(...pts), lo = Math.min(...pts);
-    const avg = pts.reduce((a,b)=>a+b,0)/pts.length;
-    document.getElementById('ms-high').textContent = '$'+hi.toFixed(2);
-    document.getElementById('ms-low').textContent  = '$'+lo.toFixed(2);
-    document.getElementById('ms-avg').textContent  = '$'+avg.toFixed(2);
-    document.getElementById('ms-pts').textContent  = (data||[]).length;
-
+    const hi=Math.max(...pts),lo=Math.min(...pts),avg=pts.reduce((a,b)=>a+b,0)/pts.length;
+    document.getElementById('ms-high').textContent='$'+hi.toFixed(2);
+    document.getElementById('ms-low').textContent ='$'+lo.toFixed(2);
+    document.getElementById('ms-avg').textContent ='$'+avg.toFixed(2);
+    document.getElementById('ms-pts').textContent =(data||[]).length;
     drawModalChart(pts, inner);
-
   } catch(err){
     inner.innerHTML = `<div class="modal-no-data">Could not load history — ${err.message}</div>`;
   }
 }
 
-// ── Modal chart (SVG) ─────────────────────────────────────────
 function drawModalChart(pts, container){
   container.innerHTML = '';
-
   const W=900, H=120;
-  const minY = Math.min(...pts)*0.98, maxY = Math.max(...pts)*1.02;
-  const sY   = v => H-((v-minY)/(maxY-minY||1))*H;
-  const sX   = i => (i/(pts.length-1||1))*W;
-
-  // Y labels
-  const ylWrap = document.createElement('div');
-  ylWrap.className = 'modal-y-labels';
+  const minY=Math.min(...pts)*0.98, maxY=Math.max(...pts)*1.02;
+  const sY=v=>H-((v-minY)/(maxY-minY||1))*H;
+  const sX=i=>(i/(pts.length-1||1))*W;
+  const ylWrap=document.createElement('div');
+  ylWrap.className='modal-y-labels';
   [maxY,(maxY+minY)/2,minY].forEach(v=>{
     const s=document.createElement('span');s.textContent='$'+v.toFixed(2);ylWrap.appendChild(s);
   });
   container.appendChild(ylWrap);
-
-  // SVG
-  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
   svg.setAttribute('preserveAspectRatio','none');
   svg.style.cssText='margin-left:40px;width:calc(100% - 40px);height:100%';
-
-  const gradId = 'mgrd';
-  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
-  defs.innerHTML=`<linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(79,140,255,.2)"/><stop offset="100%" stop-color="rgba(79,140,255,0)"/></linearGradient>`;
+  const defs=document.createElementNS('http://www.w3.org/2000/svg','defs');
+  defs.innerHTML='<linearGradient id="mgrd" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(79,140,255,.2)"/><stop offset="100%" stop-color="rgba(79,140,255,0)"/></linearGradient>';
   svg.appendChild(defs);
-
-  const pathD = pts.map((v,i)=>`${i===0?'M':'L'}${sX(i).toFixed(1)},${sY(v).toFixed(1)}`).join(' ');
-
-  const area = document.createElementNS('http://www.w3.org/2000/svg','path');
-  area.setAttribute('d', pathD+` L${W},${H} L0,${H} Z`);
-  area.setAttribute('fill',`url(#${gradId})`);
-  svg.appendChild(area);
-
-  const line = document.createElementNS('http://www.w3.org/2000/svg','path');
-  line.setAttribute('d', pathD);
-  line.setAttribute('fill','none');
-  line.setAttribute('stroke','#4f8cff');
-  line.setAttribute('stroke-width','2');
-  svg.appendChild(line);
-
-  // Current price dot
-  const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  const pathD=pts.map((v,i)=>`${i===0?'M':'L'}${sX(i).toFixed(1)},${sY(v).toFixed(1)}`).join(' ');
+  const area=document.createElementNS('http://www.w3.org/2000/svg','path');
+  area.setAttribute('d',pathD+` L${W},${H} L0,${H} Z`);area.setAttribute('fill','url(#mgrd)');svg.appendChild(area);
+  const line=document.createElementNS('http://www.w3.org/2000/svg','path');
+  line.setAttribute('d',pathD);line.setAttribute('fill','none');line.setAttribute('stroke','#4f8cff');line.setAttribute('stroke-width','2');svg.appendChild(line);
+  const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
   dot.setAttribute('cx',sX(pts.length-1));dot.setAttribute('cy',sY(pts[pts.length-1]));
-  dot.setAttribute('r','4');dot.setAttribute('fill','#4f8cff');dot.setAttribute('stroke','#0d0f14');dot.setAttribute('stroke-width','2');
-  svg.appendChild(dot);
-
+  dot.setAttribute('r','4');dot.setAttribute('fill','#4f8cff');dot.setAttribute('stroke','#0d0f14');dot.setAttribute('stroke-width','2');svg.appendChild(dot);
   container.appendChild(svg);
 }
 
@@ -866,29 +1086,26 @@ function drawModalChart(pts, container){
 // DATA FETCHING
 // ═══════════════════════════════════════════════════════════════
 async function fetchPrices(){
-  const {data,error} = await db
-    .from('latest_prices')
-    .select('*');
-
+  const {data,error} = await db.from('latest_prices').select('*');
   if(error){console.error('[ICX] prices:',error.message);return;}
   if(!data||!data.length) return;
 
   providers = data.map(r=>({
-    providerId: r.provider_id,
-    name:       r.name,
-    tier:       r.tier,
-    tierCls:    r.tier_class,
-    config:     r.config,
-    website:    r.website||'',
-    sourceType: r.source_type||'manual',
-    price:      parseFloat(r.price_usd),
-    avail:      r.is_available,
-    scrapedAt:  r.scraped_at,
+    providerId:   r.provider_id,
+    name:         r.name,
+    tier:         r.tier,
+    tierCls:      r.tier_class,
+    config:       r.config,
+    website:      r.website||'',
+    sourceType:   r.source_type||'manual',
+    gpuType:      r.gpu_type||'H100 SXM5 80GB',
+    pricingModel: r.pricing_model||(r.tier==='Marketplace'?'spot':'on_demand'),
+    price:        parseFloat(r.price_usd),
+    avail:        r.is_available,
+    scrapedAt:    r.scraped_at,
   }));
 
-  // Stale data banner — only consider auto-scraped (api) providers for staleness.
-  // Manually-maintained providers don't have live scrapers so their timestamps
-  // are not meaningful for this check.
+  // Stale banner: only for api-scraped providers
   const apiProviders = providers.filter(p => p.sourceType === 'api');
   const freshest = apiProviders.reduce((best,p)=>{
     if(!p.scrapedAt) return best;
@@ -897,44 +1114,75 @@ async function fetchPrices(){
   const staleMins = freshest ? (Date.now()-new Date(freshest))/60000 : Infinity;
   document.getElementById('stale-banner').classList.toggle('hidden', staleMins < 120);
 
-  const {data:icxRows} = await db
+  // Fetch latest ICX rates for all GPU types
+  const {data:rateRows} = await db
     .from('icx_rate_history')
-    .select('rate')
+    .select('rate,gpu_type,computed_at')
     .order('computed_at',{ascending:false})
-    .limit(1);
+    .limit(20);
 
-  if(icxRows&&icxRows.length){
-    icxRate = parseFloat(icxRows[0].rate);
-  } else {
-    const s=[...providers].map(p=>p.price).sort((a,b)=>a-b);
-    const t=Math.floor(s.length*.15);
-    const tr=s.slice(t,s.length-t);
-    icxRate = tr.length ? tr.reduce((a,b)=>a+b,0)/tr.length : 0;
+  if(rateRows&&rateRows.length){
+    icxRates = {};
+    rateRows.forEach(r => {
+      const gpu = r.gpu_type || 'H100 SXM5 80GB';
+      if(!icxRates[gpu]) icxRates[gpu] = parseFloat(r.rate);
+    });
   }
+
+  // Fallback: compute rates from providers if none stored
+  if(!icxRates['H100 SXM5 80GB']){
+    const sxm5 = providers.filter(p=>p.avail&&p.gpuType!=='H100 PCIe 80GB').map(p=>p.price).sort((a,b)=>a-b);
+    const t = Math.floor(sxm5.length*.15);
+    const tr = sxm5.slice(t,sxm5.length-t);
+    if(tr.length) icxRates['H100 SXM5 80GB'] = tr.reduce((a,b)=>a+b,0)/tr.length;
+  }
+  if(!icxRates['H100 PCIe 80GB']){
+    const pcie = providers.filter(p=>p.avail&&p.gpuType==='H100 PCIe 80GB').map(p=>p.price).sort((a,b)=>a-b);
+    if(pcie.length>=3) icxRates['H100 PCIe 80GB'] = pcie.reduce((a,b)=>a+b,0)/pcie.length;
+  }
+
+  icxRate = icxRates[activeIndexGpu] || 0;
+
+  // Update index card rates
+  const sxm5RateEl=document.getElementById('icx-sxm5-rate');
+  const pcieRateEl=document.getElementById('icx-pcie-rate');
+  if(sxm5RateEl&&icxRates['H100 SXM5 80GB']) sxm5RateEl.textContent=(icxRates['H100 SXM5 80GB']).toFixed(2);
+  if(pcieRateEl&&icxRates['H100 PCIe 80GB']) pcieRateEl.textContent=(icxRates['H100 PCIe 80GB']).toFixed(2);
 
   renderTable();
   renderTicker();
   renderStats();
 }
 
-async function fetchHistory(){
+async function fetchHistory(gpuType){
+  const gpu = gpuType || activeIndexGpu || 'H100 SXM5 80GB';
   const since = new Date(Date.now()-30*24*60*60*1000).toISOString();
+
   const {data,error} = await db
     .from('icx_rate_history')
-    .select('rate,computed_at')
+    .select('rate,computed_at,gpu_type')
     .gte('computed_at',since)
     .order('computed_at',{ascending:true});
 
-  if(error||!data||data.length<2) return;
-  const rates = data.map(r=>parseFloat(r.rate));
-  drawChart(rates);
-  render24hAnd7d(rates);
+  if(error||!data) return;
+
+  // Update index card 24h changes from full history
+  updateIndexCards(data);
+
+  // Filter history for the requested GPU type
+  const filtered = data.filter(r => (r.gpu_type||'H100 SXM5 80GB') === gpu);
+  const rates = (filtered.length>=2 ? filtered : data.filter(r=>!(r.gpu_type)&&gpu==='H100 SXM5 80GB')).map(r=>parseFloat(r.rate));
+
+  if(rates.length>=2){
+    drawChart(rates);
+    render24hAnd7d(rates);
+  }
 }
 
 // Boot
 fetchPrices();
-fetchHistory();
-setInterval(()=>{ fetchPrices(); fetchHistory(); }, 5*60*1000);
+fetchHistory('H100 SXM5 80GB');
+setInterval(()=>{ fetchPrices(); fetchHistory(activeIndexGpu); }, 5*60*1000);
 
 } // end initSite
 </script>
