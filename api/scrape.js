@@ -7,22 +7,23 @@
  * Also callable manually:
  *   GET /api/scrape?secret=YOUR_CRON_SECRET
  *
+ * Validation pipeline (3 layers applied before DB insert):
+ *   1. Bounds check  — per-GPU-type min/max range
+ *   2. Delta check   — vs provider's last known price (>60% swing → flagged)
+ *   3. IQR outlier   — statistical outlier across the current panel
+ *
+ * Flagged prices are inserted to the DB for audit but excluded
+ * from the ICX rate calculation.
+ *
  * ICX Indexes published:
  *  ─ ICX H100 SXM5  (NVLink, 80GB): primary flagship index
- *     Minimum panel: 8 available SXM5 providers
- *     Trim: drop bottom and top 15%, average the rest
- *
  *  ─ ICX H100 PCIe  (80GB): secondary index
- *     Minimum panel: 3 available PCIe providers
- *     Same trim methodology
- *
- *  Future indexes (A100, H200, L40S) use same methodology once enough
- *  providers are tracked — no code changes needed, just new scrapers.
  */
 
-import { supabase }    from '../lib/supabase.js';
-import { SCRAPERS }    from '../lib/scrapers.js';
-import { calcICXRate } from '../lib/icx.js';
+import { supabase }        from '../lib/supabase.js';
+import { SCRAPERS }        from '../lib/scrapers.js';
+import { calcICXRate }     from '../lib/icx.js';
+import { boundsCheck, deltaCheck, panelOutlierCheck } from '../lib/validate.js';
 
 export const config = { maxDuration: 60 };
 
@@ -51,12 +52,21 @@ export default async function handler(req, res) {
 
     if (provErr) throw provErr;
 
-    // 2. Split into scraped vs skipped
+    // 2. Fetch each provider's LAST known price for delta check
+    //    (do this BEFORE scraping so we compare new vs prior)
+    const { data: prevPriceRows } = await supabase
+      .from('latest_prices')
+      .select('provider_id, price_usd');
+    const prevMap = {};
+    for (const r of (prevPriceRows || [])) {
+      prevMap[r.provider_id] = parseFloat(r.price_usd);
+    }
+
+    // 3. Split into scraped vs skipped
     const toScrape = providers.filter(p => SCRAPERS[p.name]);
     const skipped  = providers.filter(p => !SCRAPERS[p.name]).map(p => p.name);
 
-    // 3. Run ALL scrapers in parallel — each has its own 10-12s internal timeout.
-    //    Total wall-clock time ≈ slowest individual scraper, not sum of all.
+    // 4. Run ALL scrapers in parallel — each has its own 10-12s internal timeout.
     const jobs = toScrape.map(provider =>
       SCRAPERS[provider.name]()
         .then(scraped => ({ provider, scraped, err: null }))
@@ -64,12 +74,14 @@ export default async function handler(req, res) {
     );
     const settled = await Promise.allSettled(jobs);
 
-    const results = { scraped: [], skipped, errors: [] };
+    const results = { scraped: [], skipped, errors: [], flagged: [] };
 
-    // 4. Collect results and build batch-insert list
-    const inserts = [];
+    // 5. Collect results — apply bounds + delta checks immediately
+    //    IQR check comes later (needs full panel assembled first)
+    const candidates = []; // { provider, scraped, gpuType, flags[] }
+
     for (const outcome of settled) {
-      if (outcome.status === 'rejected') continue; // shouldn't happen — scrapers catch internally
+      if (outcome.status === 'rejected') continue;
       const { provider, scraped, err } = outcome.value;
 
       if (err || !scraped) {
@@ -81,18 +93,65 @@ export default async function handler(req, res) {
         ? 'H100 PCIe 80GB'
         : 'H100 SXM5 80GB';
 
-      inserts.push({
-        provider_id:  provider.id,
-        price_usd:    scraped.price,
-        is_available: scraped.isAvailable,
-        gpu_type:     gpuType,
-        pricing_model: provider.tier === 'Marketplace' ? 'spot' : 'on_demand',
-        raw_data:     scraped.rawData ?? null,
-      });
-      results.scraped.push({ provider: provider.name, price: scraped.price, gpuType });
+      const flags = [];
+
+      // Layer 1 — Bounds
+      const bCheck = boundsCheck(scraped.price, gpuType);
+      if (!bCheck.valid) flags.push(bCheck.flag);
+
+      // Layer 2 — Delta vs previous price
+      const prevPrice = prevMap[provider.id] ?? null;
+      const dCheck = deltaCheck(scraped.price, prevPrice);
+      if (!dCheck.valid) flags.push(dCheck.flag);
+
+      candidates.push({ provider, scraped, gpuType, flags, prevPrice });
     }
 
-    // Batch insert all successful snapshots in one Supabase call
+    // 6. Layer 3 — IQR outlier check (needs full panel per gpu_type)
+    //    Build per-gpu_type price arrays from candidates that passed layers 1+2
+    const cleanPanels = {};
+    for (const c of candidates) {
+      if (c.flags.length === 0) { // only use already-clean prices to build the reference panel
+        if (!cleanPanels[c.gpuType]) cleanPanels[c.gpuType] = [];
+        cleanPanels[c.gpuType].push(c.scraped.price);
+      }
+    }
+
+    for (const c of candidates) {
+      const panel = cleanPanels[c.gpuType] ?? [];
+      const iqrCheck = panelOutlierCheck(c.scraped.price, panel);
+      if (!iqrCheck.valid) c.flags.push(iqrCheck.flag);
+    }
+
+    // 7. Build DB insert list with validation flags
+    const inserts = [];
+    for (const c of candidates) {
+      const isFlagged = c.flags.length > 0;
+
+      inserts.push({
+        provider_id:      c.provider.id,
+        price_usd:        c.scraped.price,
+        is_available:     c.scraped.isAvailable,
+        gpu_type:         c.gpuType,
+        pricing_model:    c.provider.tier === 'Marketplace' ? 'spot' : 'on_demand',
+        raw_data:         c.scraped.rawData ?? null,
+        is_flagged:       isFlagged,
+        validation_flags: c.flags,
+      });
+
+      if (isFlagged) {
+        results.flagged.push({
+          provider: c.provider.name,
+          price:    c.scraped.price,
+          gpuType:  c.gpuType,
+          flags:    c.flags,
+        });
+      } else {
+        results.scraped.push({ provider: c.provider.name, price: c.scraped.price, gpuType: c.gpuType });
+      }
+    }
+
+    // Batch insert all snapshots (clean + flagged both stored for audit trail)
     if (inserts.length > 0) {
       const { error: insertErr } = await supabase.from('price_snapshots').insert(inserts);
       if (insertErr) {
@@ -101,23 +160,24 @@ export default async function handler(req, res) {
       }
     }
 
-    // 5. Compute ICX rates from latest prices for every tracked GPU type
+    // 8. Compute ICX rates — exclude flagged prices
     const { data: latestPrices, error: lpErr } = await supabase
       .from('latest_prices')
       .select('*');
 
     if (lpErr) throw lpErr;
 
-    // Group available prices by gpu_type
+    // Group CLEAN, available prices by gpu_type
     const pricesByGpu = {};
     for (const row of (latestPrices || [])) {
       if (!row.is_available) continue;
+      if (row.is_flagged)    continue; // exclude validated-out prices from index calc
       const gt = row.gpu_type || 'H100 SXM5 80GB';
       if (!pricesByGpu[gt]) pricesByGpu[gt] = [];
       pricesByGpu[gt].push(parseFloat(row.price_usd));
     }
 
-    // Compute and store a rate for every GPU type that has enough data
+    // Compute and store a rate for every GPU type with enough data
     const icxResults = {};
     const rateInserts = [];
 
@@ -146,9 +206,19 @@ export default async function handler(req, res) {
       }
     }
 
-    // Primary index (H100 SXM5) summary for response
+    // Build response
     const primaryIcx = icxResults['H100 SXM5 80GB'];
     const pcieIcx    = icxResults['H100 PCIe 80GB'];
+
+    const validationSummary = {
+      total:   inserts.length,
+      clean:   results.scraped.length,
+      flagged: results.flagged.length,
+      flagRate: inserts.length > 0
+        ? ((results.flagged.length / inserts.length) * 100).toFixed(1) + '%'
+        : '0%',
+      details: results.flagged,
+    };
 
     return res.status(200).json({
       ok:            true,
@@ -159,6 +229,7 @@ export default async function handler(req, res) {
       indexes:       Object.fromEntries(
         Object.entries(icxResults).map(([gpu, r]) => [gpu, r ? { rate: r.rate, panel: r.panelSize } : null])
       ),
+      validation:    validationSummary,
       timestamp:     new Date().toISOString(),
       results,
     });
