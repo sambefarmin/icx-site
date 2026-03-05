@@ -123,7 +123,10 @@ export default async function handler(req, res) {
       if (!iqrCheck.valid) c.flags.push(iqrCheck.flag);
     }
 
-    // 7. Build DB insert list with validation flags
+    // 7. Build DB insert list with validation flags.
+    //    We attempt to insert WITH validation columns first. If that fails
+    //    (migration 008 not yet applied), we fall back to inserting without
+    //    them so prices are never lost due to a pending migration.
     const inserts = [];
     for (const c of candidates) {
       const isFlagged = c.flags.length > 0;
@@ -155,8 +158,23 @@ export default async function handler(req, res) {
     if (inserts.length > 0) {
       const { error: insertErr } = await supabase.from('price_snapshots').insert(inserts);
       if (insertErr) {
-        console.error('[/api/scrape] Batch insert error:', insertErr.message);
-        results.errors.push({ provider: 'batch-insert', reason: insertErr.message });
+        // If the error is a missing column (migration 008 not run yet), retry
+        // without validation fields so data is never lost due to pending migrations.
+        const isMissingColumn = insertErr.message?.includes('is_flagged') ||
+                                insertErr.message?.includes('validation_flags') ||
+                                insertErr.code === '42703';
+        if (isMissingColumn) {
+          console.warn('[/api/scrape] Validation columns missing — inserting without flags (run migration 008)');
+          const fallbackInserts = inserts.map(({ is_flagged, validation_flags, ...rest }) => rest);
+          const { error: fallbackErr } = await supabase.from('price_snapshots').insert(fallbackInserts);
+          if (fallbackErr) {
+            console.error('[/api/scrape] Fallback insert error:', fallbackErr.message);
+            results.errors.push({ provider: 'batch-insert', reason: fallbackErr.message });
+          }
+        } else {
+          console.error('[/api/scrape] Batch insert error:', insertErr.message);
+          results.errors.push({ provider: 'batch-insert', reason: insertErr.message });
+        }
       }
     }
 

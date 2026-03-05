@@ -828,7 +828,7 @@ function renderTable(){
       ? `<a href="${p.website}" target="_blank" rel="noopener noreferrer" class="provider-link" onclick="event.stopPropagation()">${p.name}</a>`
       : p.name;
     const flagBadge = p.isFlagged
-      ? `<span class="flag-badge" title="Excluded from ICX rate — ${p.validationFlags.join(', ')}">⚠ flagged</span>`
+      ? `<span class="flag-badge" title="This price did not pass data quality checks and is excluded from the ICX rate.">Not in index</span>`
       : '';
     const tr = document.createElement('tr');
     if (p.isFlagged) tr.classList.add('row-flagged');
